@@ -5,9 +5,9 @@ Split from users so that: (a) HR can edit profile without touching auth,
 (b) admin-side employee management is cleanly scoped,
 (c) future multi-auth scenarios are easier to handle.
 """
-from datetime import date
+from datetime import date, datetime
 
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from app.database.db import Base
@@ -26,10 +26,12 @@ class Employee(Base):
     department = Column(String(100), nullable=True)
     date_of_joining = Column(Date, nullable=True)
     profile_pic_url = Column(String(500), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationships
     user = relationship("User", back_populates="employee")
     attendance_records = relationship("Attendance", back_populates="employee")
     leave_requests = relationship("LeaveRequest", back_populates="employee")
     payroll = relationship("Payroll", back_populates="employee", uselist=False)
-
+    documents = relationship("Document", back_populates="employee")

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 from pydantic import BaseModel, model_validator
@@ -34,8 +34,13 @@ class LeaveOut(BaseModel):
     remarks: Optional[str] = None
     status: LeaveStatus
     admin_comment: Optional[str] = None
-    
+    reviewed_by: Optional[int] = None
+    reviewed_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
     employee: Optional[EmployeeNested] = None
+    # Enriched for admin list
+    employee_name: Optional[str] = None
+    employee_code: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

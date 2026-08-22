@@ -36,4 +36,4 @@ class User(Base):
 
     # Relationship to employee profile (one-to-one)
     employee = relationship("Employee", back_populates="user", uselist=False)
-
+    notifications = relationship("Notification", back_populates="user")

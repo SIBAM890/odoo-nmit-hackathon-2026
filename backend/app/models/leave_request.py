@@ -5,9 +5,9 @@ Status state machine: pending → approved | rejected
 admin_comment is written by HR when approving/rejecting.
 """
 import enum
-from datetime import date
+from datetime import date, datetime
 
-from sqlalchemy import Column, Date, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from app.database.db import Base
@@ -39,6 +39,9 @@ class LeaveRequest(Base):
     remarks = Column(Text, nullable=True)
     status = Column(Enum(LeaveStatus), default=LeaveStatus.pending, nullable=False)
     admin_comment = Column(Text, nullable=True)
+    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     employee = relationship("Employee", back_populates="leave_requests")
-
+    reviewer = relationship("User", foreign_keys=[reviewed_by])

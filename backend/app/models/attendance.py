@@ -10,7 +10,7 @@ Admin can manually override status for corrections.
 import enum
 from datetime import date, datetime
 
-from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.database.db import Base
@@ -27,6 +27,9 @@ class AttendanceStatus(str, enum.Enum):
 class Attendance(Base):
     """Docstring for Attendance."""
     __tablename__ = "attendance"
+    __table_args__ = (
+        UniqueConstraint("employee_id", "date", name="uq_attendance_employee_date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False, index=True)
@@ -34,6 +37,7 @@ class Attendance(Base):
     check_in_time = Column(DateTime, nullable=True)
     check_out_time = Column(DateTime, nullable=True)
     status = Column(Enum(AttendanceStatus), default=AttendanceStatus.absent, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     employee = relationship("Employee", back_populates="attendance_records")
 

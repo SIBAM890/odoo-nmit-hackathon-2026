@@ -13,6 +13,18 @@ class UserNested(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
+class EmployeeNested(BaseModel):
+    """Nested employee schema for relations."""
+    id: int
+    full_name: str
+    department: Optional[str] = None
+    job_title: Optional[str] = None
+    profile_pic_url: Optional[str] = None
+    user: Optional[UserNested] = None
+
+    model_config = {"from_attributes": True}
+
 class EmployeeOut(BaseModel):
     """Docstring for EmployeeOut."""
     id: int

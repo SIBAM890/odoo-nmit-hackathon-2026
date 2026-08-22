@@ -5,6 +5,7 @@ State machine: pending → approved | rejected (admin only).
 Employees can only create and view their own requests.
 Approved/rejected status is reflected immediately — no caching layer.
 """
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -99,6 +100,8 @@ def approve_leave(
         raise HTTPException(status_code=400, detail=f"Leave is already {leave.status.value}")
     leave.status = LeaveStatus.approved
     leave.admin_comment = payload.admin_comment
+    leave.reviewed_by = _admin.id
+    leave.reviewed_at = datetime.utcnow()
     db.commit()
     db.refresh(leave)
     return leave
@@ -119,6 +122,8 @@ def reject_leave(
         raise HTTPException(status_code=400, detail=f"Leave is already {leave.status.value}")
     leave.status = LeaveStatus.rejected
     leave.admin_comment = payload.admin_comment
+    leave.reviewed_by = _admin.id
+    leave.reviewed_at = datetime.utcnow()
     db.commit()
     db.refresh(leave)
     return leave

@@ -16,8 +16,11 @@ class AttendanceOut(BaseModel):
     check_in_time: Optional[datetime] = None
     check_out_time: Optional[datetime] = None
     status: AttendanceStatus
-    
+    created_at: Optional[datetime] = None
     employee: Optional[EmployeeNested] = None
+    # Enriched fields for admin views
+    employee_name: Optional[str] = None
+    employee_code: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
