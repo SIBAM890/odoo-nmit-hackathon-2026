@@ -1,4 +1,4 @@
-### 🌤️ Dayflow — Human Resource Management System
+### Dayflow - HRMS
 
 Dayflow is a modern, responsive, and production-grade Human Resource Management System (HRMS) built for the **Odoo x NMIT Bangalore Hackathon 2026**.
 
