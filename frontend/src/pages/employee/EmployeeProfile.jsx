@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import api from '../../services/api'
-import { User, Phone, MapPin, Briefcase, Building2, Calendar, Camera, Save, Edit3, X } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
-function InfoRow({ icon: Icon, label, value }) {
+function InfoRow({ icon, label, value }) {
   return (
-    <div className="flex items-start gap-4 py-3.5 border-b border-white/5 last:border-0">
-      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
-        <Icon size={15} className="text-slate-400" />
-      </div>
+    <div className="info-row">
+      <span className="material-icons" style={{
+        fontSize: '1.1rem', color: '#3f51b5',
+        flexShrink: 0, marginTop: 2,
+      }}>{icon}</span>
       <div>
-        <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-        <p className="text-sm text-slate-200">{value || <span className="text-slate-600 italic">Not set</span>}</p>
+        <div className="info-label">{label}</div>
+        <div className="info-value">
+          {value || <span style={{ color: 'rgba(0,0,0,0.38)', fontStyle: 'italic' }}>Not set</span>}
+        </div>
       </div>
     </div>
   )
@@ -26,11 +28,18 @@ export default function EmployeeProfile() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/employees/me').then((res) => {
+    api.get('/employees/me').then(res => {
       setProfile(res.data)
-      setForm({ phone: res.data.phone || '', address: res.data.address || '', profile_pic_url: res.data.profile_pic_url || '' })
+      setForm({
+        phone: res.data.phone || '',
+        address: res.data.address || '',
+        profile_pic_url: res.data.profile_pic_url || '',
+      })
       setLoading(false)
-    }).catch(() => { toast.error('Failed to load profile'); setLoading(false) })
+    }).catch(() => {
+      toast.error('Failed to load profile')
+      setLoading(false)
+    })
   }, [])
 
   async function handleSave() {
@@ -47,116 +56,121 @@ export default function EmployeeProfile() {
     }
   }
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="spinner" style={{ width: 32, height: 32, borderWidth: 3 }} />
-    </div>
-  )
+  if (loading) {
+    return <div className="loading-center"><span className="spinner" /><span>Loading profile…</span></div>
+  }
+
+  const initials = profile.full_name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'ME'
 
   return (
-    <div className="animate-fade-in space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="page-title">My Profile</h1>
         {!editing ? (
-          <button onClick={() => setEditing(true)} className="btn-secondary">
-            <Edit3 size={16} /> Edit Profile
+          <button className="btn-primary" onClick={() => setEditing(true)}>
+            <span className="material-icons" style={{ fontSize: '1rem' }}>edit</span>
+            Edit Profile
           </button>
         ) : (
-          <div className="flex gap-2">
-            <button onClick={() => setEditing(false)} className="btn-secondary">
-              <X size={16} /> Cancel
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button className="btn-secondary" onClick={() => { setEditing(false); setForm({ phone: profile.phone || '', address: profile.address || '', profile_pic_url: profile.profile_pic_url || '' }) }}>
+              <span className="material-icons" style={{ fontSize: '1rem' }}>close</span>
+              Cancel
             </button>
-            <button onClick={handleSave} disabled={saving} className="btn-primary">
-              {saving ? <span className="spinner" /> : <><Save size={16} /> Save Changes</>}
+            <button className="btn-primary" onClick={handleSave} disabled={saving}>
+              {saving ? <span className="spinner spinner-sm" /> : <><span className="material-icons" style={{ fontSize: '1rem' }}>save</span> Save</>}
             </button>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        {/* Avatar + identity */}
-        <div className="glass-card p-6 flex flex-col items-center text-center">
-          <div className="relative mb-4">
-            {profile?.profile_pic_url ? (
-              <img
-                src={profile.profile_pic_url}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-2 border-indigo-500/30"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-3xl font-bold">
-                {profile?.full_name?.[0] || '?'}
-              </div>
-            )}
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20 }}>
+        {/* Avatar Card */}
+        <div className="hr-card" style={{ textAlign: 'center', alignSelf: 'start' }}>
+          <div style={{
+            width: 100, height: 100, borderRadius: '50%',
+            background: '#3f51b5', color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2rem', fontWeight: 700,
+            margin: '0 auto 16px',
+            overflow: 'hidden',
+            border: '4px solid #e8eaf6',
+          }}>
+            {profile.profile_pic_url
+              ? <img src={profile.profile_pic_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : initials
+            }
           </div>
-          <h2 className="text-lg font-semibold text-white">{profile?.full_name}</h2>
-          <p className="text-sm text-slate-400 mt-0.5">{profile?.job_title || 'Employee'}</p>
-          <div className="mt-3 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-400 font-medium">
-            {profile?.employee_id}
-          </div>
-          <div className={`mt-2 px-3 py-1.5 rounded-full text-xs font-medium ${profile?.is_verified ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'}`}>
-            {profile?.is_verified ? '✓ Verified' : '⚠ Unverified'}
-          </div>
-          {editing && (
-            <div className="mt-4 w-full">
-              <label className="label text-left">Profile Picture URL</label>
-              <input
-                type="url"
-                className="input-field text-xs"
-                placeholder="https://..."
-                value={form.profile_pic_url}
-                onChange={(e) => setForm({ ...form, profile_pic_url: e.target.value })}
-              />
-            </div>
+          <p style={{ fontSize: '1rem', fontWeight: 500, color: 'rgba(0,0,0,0.87)', marginBottom: 4 }}>
+            {profile.full_name}
+          </p>
+          {profile.job_title && (
+            <p style={{ fontSize: '0.875rem', color: '#3f51b5', fontWeight: 500 }}>{profile.job_title}</p>
+          )}
+          {profile.department && (
+            <p style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.54)', marginBottom: 12 }}>{profile.department}</p>
+          )}
+          <span className="badge badge-success">
+            <span className="material-icons" style={{ fontSize: '0.8rem' }}>check_circle</span>
+            Active
+          </span>
+          {profile.date_of_joining && (
+            <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)', marginTop: 12 }}>
+              Joined {format(new Date(profile.date_of_joining), 'MMM d, yyyy')}
+            </p>
           )}
         </div>
 
-        {/* Details */}
-        <div className="col-span-2 space-y-4">
-          <div className="glass-card p-6">
-            <h3 className="section-title mb-4">Personal Information</h3>
+        {/* Info / Edit */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Personal Info */}
+          <div className="hr-card">
+            <h2 className="section-title" style={{ marginBottom: 12 }}>Personal Information</h2>
             {!editing ? (
-              <>
-                <InfoRow icon={Phone} label="Phone" value={profile?.phone} />
-                <InfoRow icon={MapPin} label="Address" value={profile?.address} />
-              </>
+              <div>
+                <InfoRow icon="email" label="Email" value={profile.email} />
+                <InfoRow icon="phone" label="Phone" value={profile.phone} />
+                <InfoRow icon="place" label="Address" value={profile.address} />
+              </div>
             ) : (
-              <div className="space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <div>
-                  <label className="label">Phone Number</label>
-                  <input
-                    type="tel"
-                    className="input-field"
-                    placeholder="+91-9000000000"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  />
+                  <label className="label">Email (read-only)</label>
+                  <input type="text" className="input-field" value={profile.email || ''} disabled
+                    style={{ background: '#f5f5f5', color: 'rgba(0,0,0,0.38)', cursor: 'not-allowed' }} />
+                </div>
+                <div>
+                  <label className="label">Phone</label>
+                  <input type="tel" className="input-field" value={form.phone}
+                    onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+91 98765 43210" />
                 </div>
                 <div>
                   <label className="label">Address</label>
-                  <textarea
-                    className="input-field resize-none"
-                    rows={3}
-                    placeholder="Your address..."
+                  <textarea className="input-field" rows={2} style={{ resize: 'none' }}
                     value={form.address}
-                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    onChange={e => setForm({ ...form, address: e.target.value })}
+                    placeholder="Your full address"
                   />
+                </div>
+                <div>
+                  <label className="label">Profile Picture URL</label>
+                  <input type="url" className="input-field" value={form.profile_pic_url}
+                    onChange={e => setForm({ ...form, profile_pic_url: e.target.value })}
+                    placeholder="https://example.com/photo.jpg" />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="glass-card p-6">
-            <h3 className="section-title mb-4">Job Information <span className="text-xs text-slate-600 font-normal ml-2">(read-only)</span></h3>
-            <InfoRow icon={Briefcase} label="Job Title" value={profile?.job_title} />
-            <InfoRow icon={Building2} label="Department" value={profile?.department} />
-            <InfoRow icon={Calendar} label="Date of Joining" value={profile?.date_of_joining ? format(new Date(profile.date_of_joining), 'MMMM d, yyyy') : null} />
-          </div>
-
-          <div className="glass-card p-6">
-            <h3 className="section-title mb-4">Account</h3>
-            <InfoRow icon={User} label="Email" value={profile?.email} />
-            <InfoRow icon={User} label="Employee ID" value={profile?.employee_id} />
+          {/* Employment Info */}
+          <div className="hr-card">
+            <h2 className="section-title" style={{ marginBottom: 12 }}>Employment Information</h2>
+            <InfoRow icon="badge" label="Employee ID" value={profile.user?.employee_id || profile.employee_id} />
+            <InfoRow icon="work" label="Job Title" value={profile.job_title} />
+            <InfoRow icon="business" label="Department" value={profile.department} />
+            <InfoRow icon="calendar_today" label="Date of Joining" value={profile.date_of_joining
+              ? format(new Date(profile.date_of_joining), 'MMMM d, yyyy') : null} />
           </div>
         </div>
       </div>

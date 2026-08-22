@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
-import { Plus, Check, X, Clock } from 'lucide-react'
 
 function StatusBadge({ status }) {
   const map = {
@@ -18,21 +17,18 @@ export default function EmployeeLeave() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  
   const [form, setForm] = useState({
     leave_type: 'paid',
     start_date: '',
     end_date: '',
-    remarks: ''
+    remarks: '',
   })
 
-  useEffect(() => {
-    fetchLeaves()
-  }, [])
+  useEffect(() => { fetchLeaves() }, [])
 
   function fetchLeaves() {
     api.get('/leaves/me')
-      .then((res) => {
+      .then(res => {
         setLeaves(res.data)
         setLoading(false)
       })
@@ -59,88 +55,114 @@ export default function EmployeeLeave() {
   }
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="spinner" />
-      </div>
-    )
+    return <div className="loading-center"><span className="spinner" /><span>Loading leaves…</span></div>
   }
 
   return (
-    <div className="animate-fade-in space-y-6 max-w-5xl">
-      <div className="flex justify-between items-end">
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <h1 className="page-title">My Leaves</h1>
-          <p className="text-slate-400 mt-1">Manage your leave requests and check their status.</p>
+          <p style={{ color: 'rgba(0,0,0,0.54)', marginTop: 4, fontSize: '0.875rem' }}>
+            Manage your leave requests and check their status
+          </p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          <Plus size={16} /> Apply for Leave
+        <button className="btn-accent" onClick={() => setShowModal(true)}>
+          <span className="material-icons" style={{ fontSize: '1rem' }}>add</span>
+          Apply for Leave
         </button>
       </div>
 
-      <div className="glass-card overflow-hidden">
-        {leaves.length === 0 ? (
-          <div className="p-12 text-center text-slate-400">
-            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-              <CalendarIcon size={24} className="text-slate-500" />
-            </div>
-            <p>You haven't requested any leaves yet.</p>
+      {leaves.length === 0 ? (
+        <div className="hr-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%',
+            background: '#e8eaf6', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 16px',
+          }}>
+            <span className="material-icons" style={{ color: '#3f51b5', fontSize: '2rem' }}>event_available</span>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="table-header text-xs text-slate-400 uppercase">
-                  <th className="p-4 font-medium">Type</th>
-                  <th className="p-4 font-medium">Duration</th>
-                  <th className="p-4 font-medium">Status</th>
-                  <th className="p-4 font-medium">Remarks</th>
-                  <th className="p-4 font-medium">Admin Comment</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaves.map((l) => (
-                  <tr key={l.id} className="table-row">
-                    <td className="p-4 text-sm font-medium text-slate-200 capitalize">
-                      {l.leave_type}
+          <p style={{ fontSize: '1rem', fontWeight: 500, color: 'rgba(0,0,0,0.54)' }}>
+            No leave requests yet
+          </p>
+          <p style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.38)', marginTop: 4 }}>
+            Click the button above to apply for leave.
+          </p>
+        </div>
+      ) : (
+        <div className="hr-table-wrap" style={{ overflowX: 'auto' }}>
+          <table className="hr-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Days</th>
+                <th>Status</th>
+                <th>Remarks</th>
+                <th>Admin Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaves.map(l => {
+                const days = Math.round(
+                  (new Date(l.end_date) - new Date(l.start_date)) / 86_400_000
+                ) + 1
+                return (
+                  <tr key={l.id}>
+                    <td style={{ textTransform: 'capitalize', fontWeight: 500 }}>{l.leave_type}</td>
+                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{format(new Date(l.start_date), 'MMM d, yyyy')}</td>
+                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{format(new Date(l.end_date), 'MMM d, yyyy')}</td>
+                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{days}d</td>
+                    <td><StatusBadge status={l.status} /></td>
+                    <td>
+                      <span
+                        title={l.remarks}
+                        style={{
+                          display: 'block', maxWidth: 180, overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          color: 'rgba(0,0,0,0.54)', fontSize: '0.8125rem',
+                        }}
+                      >
+                        {l.remarks || '—'}
+                      </span>
                     </td>
-                    <td className="p-4 text-sm text-slate-300">
-                      {format(new Date(l.start_date), 'MMM d, yy')} - {format(new Date(l.end_date), 'MMM d, yy')}
-                    </td>
-                    <td className="p-4">
-                      <StatusBadge status={l.status} />
-                    </td>
-                    <td className="p-4 text-sm text-slate-400 max-w-[200px] truncate">
-                      {l.remarks || '-'}
-                    </td>
-                    <td className="p-4 text-sm text-slate-400 max-w-[200px] truncate">
-                      {l.admin_comment || '-'}
+                    <td>
+                      <span style={{
+                        color: l.admin_comment ? '#4caf50' : 'rgba(0,0,0,0.38)',
+                        fontSize: '0.8125rem',
+                        maxWidth: 160, display: 'block', overflow: 'hidden',
+                        textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }} title={l.admin_comment}>
+                        {l.admin_comment || '—'}
+                      </span>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
+      {/* Apply Leave Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-white">Apply for Leave</h2>
-              <button onClick={() => setShowModal(false)} className="text-slate-500 hover:text-white">
-                <X size={20} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h2 className="modal-title" style={{ margin: 0 }}>Apply for Leave</h2>
+              <button onClick={() => setShowModal(false)} className="btn-icon">
+                <span className="material-icons">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
                 <label className="label">Leave Type</label>
-                <select 
+                <select
                   className="input-field"
                   value={form.leave_type}
-                  onChange={e => setForm({...form, leave_type: e.target.value})}
+                  onChange={e => setForm({ ...form, leave_type: e.target.value })}
                   required
                 >
                   <option value="paid">Paid Leave</option>
@@ -149,24 +171,25 @@ export default function EmployeeLeave() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label className="label">Start Date</label>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     className="input-field"
                     value={form.start_date}
-                    onChange={e => setForm({...form, start_date: e.target.value})}
+                    onChange={e => setForm({ ...form, start_date: e.target.value })}
                     required
                   />
                 </div>
                 <div>
                   <label className="label">End Date</label>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     className="input-field"
                     value={form.end_date}
-                    onChange={e => setForm({...form, end_date: e.target.value})}
+                    min={form.start_date}
+                    onChange={e => setForm({ ...form, end_date: e.target.value })}
                     required
                   />
                 </div>
@@ -174,21 +197,20 @@ export default function EmployeeLeave() {
 
               <div>
                 <label className="label">Remarks (Optional)</label>
-                <textarea 
-                  className="input-field resize-none" 
-                  rows="3"
+                <textarea
+                  className="input-field"
+                  rows={3}
+                  style={{ resize: 'none' }}
                   placeholder="Reason for leave..."
                   value={form.remarks}
-                  onChange={e => setForm({...form, remarks: e.target.value})}
-                ></textarea>
+                  onChange={e => setForm({ ...form, remarks: e.target.value })}
+                />
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">
-                  Cancel
-                </button>
-                <button type="submit" disabled={submitting} className="btn-primary">
-                  {submitting ? <span className="spinner border-t-transparent w-4 h-4" /> : 'Submit Request'}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, paddingTop: 8 }}>
+                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary" disabled={submitting}>
+                  {submitting ? <span className="spinner spinner-sm" /> : 'Submit Request'}
                 </button>
               </div>
             </form>
@@ -196,27 +218,5 @@ export default function EmployeeLeave() {
         </div>
       )}
     </div>
-  )
-}
-
-function CalendarIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-      <line x1="16" x2="16" y1="2" y2="6" />
-      <line x1="8" x2="8" y1="2" y2="6" />
-      <line x1="3" x2="21" y1="10" y2="10" />
-    </svg>
   )
 }
