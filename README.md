@@ -34,7 +34,7 @@ It features a split-role architecture separating standard Employees from HR Admi
 **Backend**
 - Python 3.10+
 - FastAPI
-- SQLite (Local DB for hackathon scope)
+- PostgreSQL (Database)
 - SQLAlchemy (ORM)
 - PyJWT & bcrypt (Auth & Security)
 
@@ -99,7 +99,7 @@ venv\Scripts\activate # On Windows
 pip install -r requirements.txt
 
 # Start the FastAPI server
-python -m uvicorn app.main:app --port 8001 --host 0.0.0.0 --reload
+python -m uvicorn app.main:app --port 8000 --host 0.0.0.0 --reload
 ```
 *Note: The backend automatically drops and seeds fresh database tables on startup (using `app.database.seed`).*
 

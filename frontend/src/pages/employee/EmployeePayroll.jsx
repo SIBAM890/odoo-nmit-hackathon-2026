@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 
 export default function EmployeePayroll() {
   const [payroll, setPayroll] = useState(null)
@@ -150,7 +151,7 @@ export default function EmployeePayroll() {
                 fontSize: '0.8125rem', color: 'rgba(0,0,0,0.38)',
               }}>
                 <span className="material-icons" style={{ fontSize: '0.9rem', color: '#4caf50' }}>check_circle</span>
-                Last updated by HR on {format(new Date(payroll.updated_at + 'Z'), 'MMMM d, yyyy')}
+                Last updated by HR on {payroll.updated_at ? format(parseTimestamp(payroll.updated_at) || new Date(payroll.updated_at + 'T00:00:00'), 'MMMM d, yyyy') : '—'}
               </div>
             )}
           </div>

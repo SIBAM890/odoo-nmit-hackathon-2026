@@ -96,7 +96,7 @@ export default function RegisterPage() {
     return (
       <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
         <header className="hr-toolbar">
-          <span className="hr-toolbar-title">HR Management System</span>
+          <span className="hr-toolbar-title">Dayflow</span>
         </header>
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
@@ -138,7 +138,7 @@ export default function RegisterPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
       <header className="hr-toolbar">
-        <span className="hr-toolbar-title">HR Management System</span>
+        <span className="hr-toolbar-title">Dayflow</span>
       </header>
 
       <div style={{

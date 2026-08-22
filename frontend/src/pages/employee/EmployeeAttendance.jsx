@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 
 function StatusBadge({ status }) {
   const map = {
@@ -83,8 +84,8 @@ export default function EmployeeAttendance() {
           <p style={{ fontWeight: 500 }}>Today — {format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
           {todayRecord ? (
             <div style={{ display: 'flex', gap: 16, marginTop: 6, fontSize: '0.875rem', color: 'rgba(0,0,0,0.54)' }}>
-              <span>In: {todayRecord.check_in_time ? format(new Date(todayRecord.check_in_time + 'Z'), 'hh:mm a') : '—'}</span>
-              <span>Out: {todayRecord.check_out_time ? format(new Date(todayRecord.check_out_time + 'Z'), 'hh:mm a') : '—'}</span>
+              <span>In: {parseTimestamp(todayRecord.check_in_time) ? format(parseTimestamp(todayRecord.check_in_time), 'hh:mm a') : '—'}</span>
+              <span>Out: {parseTimestamp(todayRecord.check_out_time) ? format(parseTimestamp(todayRecord.check_out_time), 'hh:mm a') : '—'}</span>
               <StatusBadge status={todayRecord.status} />
             </div>
           ) : (
@@ -165,22 +166,23 @@ export default function EmployeeAttendance() {
             </thead>
             <tbody>
               {records.map(r => {
+                const checkIn  = parseTimestamp(r.check_in_time)
+                const checkOut = parseTimestamp(r.check_out_time)
                 let hours = null
-                if (r.check_in_time && r.check_out_time) {
-                  const ms = new Date(r.check_out_time + 'Z') - new Date(r.check_in_time + 'Z')
-                  hours = (ms / 3_600_000).toFixed(1)
+                if (checkIn && checkOut) {
+                  hours = ((checkOut - checkIn) / 3_600_000).toFixed(1)
                 }
                 return (
                   <tr key={r.id}>
                     <td style={{ color: 'rgba(0,0,0,0.87)', fontWeight: 500 }}>
-                      {format(new Date(r.date), 'MMM d, yyyy')}
+                      {r.date ? format(new Date(r.date + 'T00:00:00'), 'MMM d, yyyy') : '—'}
                     </td>
-                    <td style={{ color: 'rgba(0,0,0,0.54)' }}>{format(new Date(r.date), 'EEE')}</td>
+                    <td style={{ color: 'rgba(0,0,0,0.54)' }}>{r.date ? format(new Date(r.date + 'T00:00:00'), 'EEE') : '—'}</td>
                     <td style={{ color: 'rgba(0,0,0,0.7)' }}>
-                      {r.check_in_time ? format(new Date(r.check_in_time + 'Z'), 'hh:mm a') : '—'}
+                      {checkIn ? format(checkIn, 'hh:mm a') : '—'}
                     </td>
                     <td style={{ color: 'rgba(0,0,0,0.7)' }}>
-                      {r.check_out_time ? format(new Date(r.check_out_time + 'Z'), 'hh:mm a') : '—'}
+                      {checkOut ? format(checkOut, 'hh:mm a') : '—'}
                     </td>
                     <td style={{ color: hours ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.38)' }}>
                       {hours ? `${hours}h` : '—'}

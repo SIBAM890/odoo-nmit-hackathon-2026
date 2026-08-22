@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import { format, subDays } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 import { useAuth } from '../../context/AuthContext'
 import {
   Clock, LogIn, LogOut, CheckCircle, CalendarClock, Activity, ArrowRight, Sun, Moon
@@ -87,7 +88,9 @@ export default function EmployeeDashboard() {
       const rec = attendance.find(a => a.date === dateStr)
       let hours = 0
       if (rec && rec.check_in_time && rec.check_out_time) {
-        hours = (new Date(rec.check_out_time + 'Z') - new Date(rec.check_in_time + 'Z')) / 3600000
+        const ci = parseTimestamp(rec.check_in_time)
+        const co = parseTimestamp(rec.check_out_time)
+        if (ci && co) hours = (co - ci) / 3600000
       }
       data.push({
         name: format(d, 'EEE'),
@@ -147,11 +150,11 @@ export default function EmployeeDashboard() {
               {todayRecord ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   <div style={{ fontSize: '1.25rem', fontWeight: 600 }}>
-                    In: {todayRecord.check_in_time ? format(new Date(todayRecord.check_in_time + 'Z'), 'h:mm a') : '--'}
+                    In: {parseTimestamp(todayRecord.check_in_time) ? format(parseTimestamp(todayRecord.check_in_time), 'h:mm a') : '--'}
                   </div>
                   {todayRecord.check_out_time ? (
                     <div style={{ fontSize: '1rem', opacity: 0.8 }}>
-                      Out: {format(new Date(todayRecord.check_out_time + 'Z'), 'h:mm a')}
+                      Out: {parseTimestamp(todayRecord.check_out_time) ? format(parseTimestamp(todayRecord.check_out_time), 'h:mm a') : '--'}
                     </div>
                   ) : (
                     <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Currently working...</div>
@@ -305,12 +308,12 @@ export default function EmployeeDashboard() {
               }}>
                 <div>
                   <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1e293b' }}>
-                    {format(new Date(r.date), 'EEE, MMM d')}
+                    {r.date ? format(new Date(r.date + 'T00:00:00'), 'EEE, MMM d') : '—'}
                   </p>
                   <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>
-                    {r.check_in_time ? format(new Date(r.check_in_time + 'Z'), 'h:mm a') : '--'}
+                    {r.check_in_time ? format(parseTimestamp(r.check_in_time), 'h:mm a') : '--'}
                     {' — '}
-                    {r.check_out_time ? format(new Date(r.check_out_time + 'Z'), 'h:mm a') : 'Working'}
+                    {r.check_out_time ? format(parseTimestamp(r.check_out_time), 'h:mm a') : 'Working'}
                   </p>
                 </div>
                 <StatusBadge status={r.status} />

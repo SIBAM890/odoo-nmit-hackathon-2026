@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 
 function StatusBadge({ status }) {
   const map = {
@@ -106,13 +107,13 @@ export default function EmployeeLeave() {
             <tbody>
               {leaves.map(l => {
                 const days = Math.round(
-                  (new Date(l.end_date) - new Date(l.start_date)) / 86_400_000
+                  (new Date(l.end_date + 'T00:00:00') - new Date(l.start_date + 'T00:00:00')) / 86_400_000
                 ) + 1
                 return (
                   <tr key={l.id}>
                     <td style={{ textTransform: 'capitalize', fontWeight: 500 }}>{l.leave_type}</td>
-                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{format(new Date(l.start_date), 'MMM d, yyyy')}</td>
-                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{format(new Date(l.end_date), 'MMM d, yyyy')}</td>
+                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{format(new Date(l.start_date + 'T00:00:00'), 'MMM d, yyyy')}</td>
+                    <td style={{ color: 'rgba(0,0,0,0.7)' }}>{format(new Date(l.end_date + 'T00:00:00'), 'MMM d, yyyy')}</td>
                     <td style={{ color: 'rgba(0,0,0,0.7)' }}>{days}d</td>
                     <td><StatusBadge status={l.status} /></td>
                     <td>

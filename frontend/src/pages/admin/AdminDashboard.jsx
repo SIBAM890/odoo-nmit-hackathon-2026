@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import { format, subDays } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 import {
   Users, UserCheck, CalendarClock, CalendarRange,
   ArrowRight, Activity, Clock
@@ -266,7 +267,7 @@ export default function AdminDashboard() {
                     {l.employee?.full_name}
                   </p>
                   <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2, textTransform: 'capitalize' }}>
-                    {l.leave_type} — {format(new Date(l.start_date), 'MMM d')} to {format(new Date(l.end_date), 'MMM d')}
+                    {l.leave_type} — {format(new Date(l.start_date + 'T00:00:00'), 'MMM d')} to {format(new Date(l.end_date + 'T00:00:00'), 'MMM d')}
                   </p>
                 </div>
                 <StatusBadge status={l.status} />
@@ -310,9 +311,9 @@ export default function AdminDashboard() {
                     {a.employee?.full_name}
                   </p>
                   <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>
-                    In: {a.check_in_time ? format(new Date(a.check_in_time + 'Z'), 'h:mm a') : '--'}
+                    In: {parseTimestamp(a.check_in_time) ? format(parseTimestamp(a.check_in_time), 'h:mm a') : '--'}
                     {' | '}
-                    Out: {a.check_out_time ? format(new Date(a.check_out_time + 'Z'), 'h:mm a') : '--'}
+                    Out: {parseTimestamp(a.check_out_time) ? format(parseTimestamp(a.check_out_time), 'h:mm a') : '--'}
                   </p>
                 </div>
                 <StatusBadge status={a.status} />

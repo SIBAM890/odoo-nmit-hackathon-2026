@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
+import { parseTimestamp } from '../../utils/time'
 
 export default function AdminPayroll() {
   const [payrolls, setPayrolls] = useState([])
@@ -144,7 +145,9 @@ export default function AdminPayroll() {
                     </span>
                   </td>
                   <td style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.38)' }}>
-                    {p.updated_at ? format(new Date(p.updated_at + 'Z'), 'MMM d, yyyy') : '—'}
+                    {p.updated_at
+                      ? format(parseTimestamp(p.updated_at) || new Date(p.updated_at + 'T00:00:00'), 'MMM d, yyyy')
+                      : '—'}
                   </td>
                   <td>
                     {isEditing ? (

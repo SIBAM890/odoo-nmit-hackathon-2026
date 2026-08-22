@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 
 function StatusBadge({ status }) {
   const map = {
@@ -79,15 +80,16 @@ export default function AdminAttendance() {
           </thead>
           <tbody>
             {attendance.map(r => {
+              const checkIn  = parseTimestamp(r.check_in_time)
+              const checkOut = parseTimestamp(r.check_out_time)
               let hours = null
-              if (r.check_in_time && r.check_out_time) {
-                const ms = new Date(r.check_out_time + 'Z') - new Date(r.check_in_time + 'Z')
-                hours = (ms / 3_600_000).toFixed(1)
+              if (checkIn && checkOut) {
+                hours = ((checkOut - checkIn) / 3_600_000).toFixed(1)
               }
               return (
                 <tr key={r.id}>
                   <td style={{ whiteSpace: 'nowrap', color: 'rgba(0,0,0,0.7)' }}>
-                    {format(new Date(r.date), 'MMM d, yyyy')}
+                    {r.date ? format(new Date(r.date + 'T00:00:00'), 'MMM d, yyyy') : '—'}
                   </td>
                   <td>
                     <span style={{ fontWeight: 500 }}>{r.employee?.full_name}</span>
@@ -96,10 +98,10 @@ export default function AdminAttendance() {
                     </span>
                   </td>
                   <td style={{ color: 'rgba(0,0,0,0.7)' }}>
-                    {r.check_in_time ? format(new Date(r.check_in_time + 'Z'), 'hh:mm a') : '—'}
+                    {checkIn ? format(checkIn, 'hh:mm a') : '—'}
                   </td>
                   <td style={{ color: 'rgba(0,0,0,0.7)' }}>
-                    {r.check_out_time ? format(new Date(r.check_out_time + 'Z'), 'hh:mm a') : '—'}
+                    {checkOut ? format(checkOut, 'hh:mm a') : '—'}
                   </td>
                   <td style={{ color: hours ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.38)' }}>
                     {hours ? `${hours}h` : '—'}

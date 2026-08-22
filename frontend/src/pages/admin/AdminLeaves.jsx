@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { parseTimestamp } from '../../utils/time'
 
 function StatusBadge({ status }) {
   const map = {
@@ -91,7 +92,7 @@ export default function AdminLeaves() {
           <tbody>
             {leaves.map(l => {
               const days = Math.round(
-                (new Date(l.end_date) - new Date(l.start_date)) / 86_400_000
+                (new Date(l.end_date + 'T00:00:00') - new Date(l.start_date + 'T00:00:00')) / 86_400_000
               ) + 1
               return (
                 <tr key={l.id}>
@@ -103,7 +104,7 @@ export default function AdminLeaves() {
                   </td>
                   <td style={{ textTransform: 'capitalize', color: 'rgba(0,0,0,0.7)' }}>{l.leave_type}</td>
                   <td style={{ whiteSpace: 'nowrap', color: 'rgba(0,0,0,0.7)' }}>
-                    {format(new Date(l.start_date), 'MMM d')} – {format(new Date(l.end_date), 'MMM d, yy')}
+                    {format(new Date(l.start_date + 'T00:00:00'), 'MMM d')} – {format(new Date(l.end_date + 'T00:00:00'), 'MMM d, yy')}
                   </td>
                   <td style={{ color: 'rgba(0,0,0,0.7)' }}>{days}d</td>
                   <td style={{ maxWidth: 180 }}>
