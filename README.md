@@ -1,28 +1,32 @@
-### Dayflow - HRMS
+# Dayflow - HRMS
 
 Dayflow is a modern, responsive, and production-grade Human Resource Management System (HRMS) built for the **Odoo x NMIT Bangalore Hackathon 2026**.
 
-It features a split-role architecture separating standard Employees from HR Administrators, providing a seamless workflow for tracking attendance, managing leave requests, and handling payroll structures.
+It features a split-role architecture separating standard Employees from HR Administrators, providing a seamless workflow for tracking attendance, managing leave requests, and handling payroll structures. Recent updates have further enhanced the backend with robust database migrations, audit fields, and support for documents and notifications.
 
-## Features
+## ✨ Features
  
 ### Employee Portal
- 
 * **Dashboard** — quick overview of attendance metrics, live check-in/out, and pending leaves
 * **Attendance History** — detailed log of all daily check-ins and check-outs
 * **Leave Management** — submit new leave requests (Sick, Paid, Unpaid) and track approval status
 * **Payroll** — read-only view of current salary structure (Basic, HRA, Deductions, Net Pay)
 * **Profile Management** — update personal contact details and profile avatars
+
 ### Admin Portal
- 
 * **Admin Dashboard** — company-wide HR metrics and actionable pending queues
 * **Employee Directory** — searchable staff list with a detailed edit view for managing roles and job titles
 * **Attendance Oversight** — override capabilities to manually fix or adjust employee attendance records
 * **Leave Approvals** — dedicated queue for reviewing, approving, or rejecting leave requests with optional admin feedback
 * **Payroll Setup** — initialize and update salary components for any employee dynamically
+
+### Advanced Backend (Newly Added)
+* **Alembic Migrations** — reliable database version control and schema migrations
+* **Audit Logs & Constraints** — robust foreign key indexing, requirement traceability docstrings, and comprehensive audit fields (created/updated timestamps)
+* **Expanded Models** — schemas extended to support Departments, Employee Documents, and real-time Notifications
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
 **Frontend**
 - React 18 (Vite)
@@ -36,21 +40,22 @@ It features a split-role architecture separating standard Employees from HR Admi
 - FastAPI
 - SQLite (Local DB for hackathon scope)
 - SQLAlchemy (ORM)
+- Alembic (Database Migrations)
 - PyJWT & bcrypt (Auth & Security)
 
 ---
 
-## Security Principles
+## 🔒 Security Principles
  
 | Principle | Details |
 | --- | :-- |
-|  No Mock Auth | Full JWT implementation — roles (`admin`, `employee`) are embedded securely in the token payload |
-|  Route Guards | Frontend blocks unauthorized access to Admin pages |
-|  Server-Side Enforcement | Backend enforces data ownership — an employee cannot view or edit another employee's attendance, leaves, or payroll |
-|  Password Hashing | Passwords are never stored in plaintext (uses `bcrypt`) |
+| **No Mock Auth** | Full JWT implementation — roles (`admin`, `employee`) are embedded securely in the token payload |
+| **Route Guards** | Frontend blocks unauthorized access to Admin pages |
+| **Server-Side Enforcement** | Backend enforces data ownership — an employee cannot view or edit another employee's attendance, leaves, or payroll |
+| **Password Hashing** | Passwords are never stored in plaintext (uses `bcrypt`) |
  
 ---
-##  System Overview
+## 🏗 System Overview
  
 ```mermaid
 flowchart TB
@@ -84,7 +89,7 @@ flowchart TB
  
 ---
 
-##  How to Run Locally
+## 🚀 How to Run Locally
 
 ### 1. Start the Backend API
 ```bash
@@ -98,10 +103,13 @@ venv\Scripts\activate # On Windows
 # Install dependencies
 pip install -r requirements.txt
 
+# Run migrations (ensure DB is up-to-date)
+alembic upgrade head
+
 # Start the FastAPI server
 python -m uvicorn app.main:app --port 8001 --host 0.0.0.0 --reload
 ```
-*Note: The backend automatically drops and seeds fresh database tables on startup (using `app.database.seed`).*
+*Note: The backend runs on port `8001` and is configured to handle the updated database schemas.*
 
 ### 2. Start the Frontend App
 ```bash
@@ -117,11 +125,11 @@ npm run dev
 
 ### 3. Access the Application
 - **Web App**: http://localhost:5173
-- **API Docs (Swagger)**: http://localhost:8000/docs
+- **API Docs (Swagger)**: http://localhost:8001/docs
 
 ---
 
-## Demo Credentials
+## 🧪 Demo Credentials
 
 The database is seeded with two default users:
 
@@ -135,6 +143,7 @@ The database is seeded with two default users:
 
 ---
 
-## Developed by- Team Saridon
+## 👨‍💻 Developed by Team Saridon
 
-| Sibam Prasad Sahoo || Suryansh Anand || Pritam Piyush || Varsha Sharma |
+| Sibam Prasad Sahoo | Suryansh Anand | Pritam Piyush | Varsha Sharma |
+| :---: | :---: | :---: | :---: |
