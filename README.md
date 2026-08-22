@@ -1,4 +1,4 @@
-# Dayflow HRMS 🚀
+# Dayflow HRMS 
 
 **Dayflow HRMS** is a modern, full-stack Human Resource Management System built for the **Odoo x NMIT Hackathon 2026**. 
 
@@ -6,9 +6,9 @@ It features a dual-portal architecture separating standard **Employee Self-Servi
 
 ---
 
-## 🛠️ Complete Tech Stack Breakdown
+## Complete Tech Stack Breakdown
 
-### 🎨 Frontend Architecture
+### Frontend Architecture
 | Layer / Component | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
 | **UI Framework** | React | `^19.2.8` | Declarative component-driven UI architecture |
@@ -21,7 +21,7 @@ It features a dual-portal architecture separating standard **Employee Self-Servi
 | **Date Processing** | date-fns | `^4.4.0` | Date manipulation and formatting utilities |
 | **Code Quality & Linter** | Oxlint | `^1.75.0` | Fast Rust-based JavaScript/JSX linter |
 
-### ⚙️ Backend Architecture
+### Backend Architecture
 | Layer / Component | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Language & Runtime** | Python | `3.10+` | Backend execution environment |
@@ -38,7 +38,7 @@ It features a dual-portal architecture separating standard **Employee Self-Servi
 
 ---
 
-## 🔒 Security & Authorization Design
+## Security & Authorization Design
 
 | Security Principle | Implementation Detail |
 | :--- | :--- |
@@ -50,7 +50,7 @@ It features a dual-portal architecture separating standard **Employee Self-Servi
 
 ---
 
-## 🏗️ System Architecture & Workflow
+## System Architecture & Workflow
 
 ```mermaid
 flowchart TB
@@ -93,7 +93,7 @@ flowchart TB
 
 ---
 
-## 🗄️ Database Entity Relationship Diagram
+## Database Entity Relationship Diagram
 
 ```mermaid
 erDiagram
@@ -163,16 +163,16 @@ erDiagram
 
 ---
 
-## 🌟 Core Features
+## Core Features
 
-### 👤 Employee Self-Service Portal
+### Employee Self-Service Portal
 1. **Interactive Dashboard**: Quick metrics overview, check-in/out actions, and attendance summaries.
-2. **Attendance Tracker**: One-click check-in and check-out. Automatically calculates hours worked and assigns `present` (≥ 4 hrs) or `half-day` (< 4 hrs) status.
+2. **Attendance Tracker**: One-click check-in and check-out. Automatically calculates hours worked and assigns `present` ( 4 hrs) or `half-day` (< 4 hrs) status.
 3. **Leave Management**: Submit leave requests with date pickers and leave type selection (Paid, Sick, Unpaid). Includes automatic backend overlap detection.
 4. **Payroll Breakdown**: Read-only access to itemized salary structure (Basic, HRA, Deductions, and Net Salary).
 5. **Profile Settings**: Edit personal contact information (Phone, Address) and view company assignment details.
 
-### 🛡️ Admin HR Portal
+### Admin HR Portal
 1. **HR Operations Dashboard**: Company-wide workforce statistics, pending leave queue alerts, and operational metrics.
 2. **Employee Directory**: Search and view all staff members; create or update employee roles, job titles, and departments.
 3. **Attendance Oversight**: View company-wide attendance logs with date filtering and manual override capabilities for correcting missed punches.
@@ -181,52 +181,54 @@ erDiagram
 
 ---
 
-## 📡 API Endpoint Reference
+## API Endpoint Reference
 
-### 🔑 Authentication (`/auth`)
-- `POST /auth/register` — Register a new user account & generate verification token.
-- `POST /auth/login` — Authenticate credentials & receive JWT Bearer token.
-- `GET /auth/verify/{token}` — Validate email verification token.
-- `GET /auth/me` — Fetch current user identity details.
+### Authentication (`/auth`)
+- `POST /auth/register`  Register a new user account & generate verification token.
+- `POST /auth/login`  Authenticate credentials & receive JWT Bearer token.
+- `GET /auth/verify/{token}`  Validate email verification token.
+- `GET /auth/me`  Fetch current user identity details.
 
-### 👥 Employee Management (`/employees`)
-- `GET /employees/me` — Fetch profile of the authenticated employee.
-- `PUT /employees/me` — Update contact details (phone, address) of current employee.
-- `GET /employees` — *(Admin Only)* List all registered employees.
-- `GET /employees/{id}` — *(Admin Only)* Fetch detailed profile of a specific employee.
-- `PUT /employees/{id}` — *(Admin Only)* Update employee role, department, job title, or profile details.
+### Employee Management (`/employees`)
+- `GET /employees/me`  Fetch profile of the authenticated employee.
+- `PUT /employees/me`  Update contact details (phone, address) of current employee.
+- `GET /employees`  *(Admin Only)* List all registered employees.
+- `GET /employees/{id}`  *(Admin Only)* Fetch detailed profile of a specific employee.
+- `PUT /employees/{id}`  *(Admin Only)* Update employee role, department, job title, or profile details.
 
-### ⏱️ Attendance (`/attendance`)
-- `POST /attendance/check-in` — Record daily check-in timestamp.
-- `POST /attendance/check-out` — Record daily check-out timestamp & compute work status.
-- `GET /attendance/me` — Fetch complete attendance history for current employee.
-- `GET /attendance` — *(Admin Only)* List attendance records across company (supports filtering).
-- `PUT /attendance/{record_id}` — *(Admin Only)* Override attendance timestamps or status.
+### Attendance (`/attendance`)
+- `POST /attendance/check-in`  Record daily check-in timestamp.
+- `POST /attendance/check-out`  Record daily check-out timestamp & compute work status.
+- `GET /attendance/me`  Fetch complete attendance history for current employee.
+- `GET /attendance`  *(Admin Only)* List attendance records across company (supports filtering).
+- `PUT /attendance/{record_id}`  *(Admin Only)* Override attendance timestamps or status.
 
-### 📅 Leave Requests (`/leaves`)
-- `POST /leaves` — Apply for leave (validates against date overlaps).
-- `GET /leaves/me` — Fetch current employee's leave history and request status.
-- `GET /leaves` — *(Admin Only)* Fetch all leave requests in the system.
-- `PUT /leaves/{id}/approve` — *(Admin Only)* Approve a pending leave request.
-- `PUT /leaves/{id}/reject` — *(Admin Only)* Reject a pending leave request.
+### Leave Requests (`/leaves`)
+- `POST /leaves`  Apply for leave (validates against date overlaps).
+- `GET /leaves/me`  Fetch current employee's leave history and request status.
+- `GET /leaves`  *(Admin Only)* Fetch all leave requests in the system.
+- `PUT /leaves/{id}/approve`  *(Admin Only)* Approve a pending leave request.
+- `PUT /leaves/{id}/reject`  *(Admin Only)* Reject a pending leave request.
 
-### 💰 Payroll (`/payroll`)
-- `GET /payroll/me` — Fetch current employee's breakdown of Basic, HRA, Deductions, and Net Salary.
-- `GET /payroll` — *(Admin Only)* View payroll records for all employees.
-- `PUT /payroll/{employee_id}` — *(Admin Only)* Configure salary components (Net Salary auto-calculated).
+### Payroll (`/payroll`)
+- `GET /payroll/me`  Fetch current employee's breakdown of Basic, HRA, Deductions, and Net Salary.
+- `GET /payroll`  *(Admin Only)* View payroll records for all employees.
+- `PUT /payroll/{employee_id}`  *(Admin Only)* Configure salary components (Net Salary auto-calculated).
 
 ---
 
-## 🚀 How to Run Locally
+## How to Run Locally
 
 ### Prerequisites
 - **Python**: Version `3.10` or higher
 - **Node.js**: Version `18.x` or higher
 - **npm**: Version `9.x` or higher
+- **PostgreSQL**: Ensure PostgreSQL is installed and running locally. Create a database named `dayflow_db`. Alternatively, update the `DATABASE_URL` in `backend/.env` to point to your existing PostgreSQL database.
+
 
 ---
 
-### 1️⃣ Start the Backend API
+### 1 Start the Backend API
 
 ```bash
 # Navigate to backend directory
@@ -244,15 +246,15 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Start the FastAPI server (Runs on port 8001)
-python -m uvicorn app.main:app --port 8001 --host 0.0.0.0 --reload
+# Start the FastAPI server (Runs on port 8000)
+python -m uvicorn app.main:app --port 8000 --host 0.0.0.0 --reload
 ```
 
 *Note: Upon startup, the backend automatically initializes the database schema and seeds initial demo data.*
 
 ---
 
-### 2️⃣ Start the Frontend Web App
+### 2 Start the Frontend Web App
 
 ```bash
 # Open a new terminal window and navigate to frontend directory
@@ -267,15 +269,15 @@ npm run dev
 
 ---
 
-### 3️⃣ Access Points & Documentation
+### 3 Access Points & Documentation
 
-- 🌐 **Web Application Interface**: [http://localhost:5173](http://localhost:5173)
-- 📖 **Interactive API Documentation (Swagger)**: [http://localhost:8001/docs](http://localhost:8001/docs)
-- 📑 **Alternative API Specification (ReDoc)**: [http://localhost:8001/redoc](http://localhost:8001/redoc)
+- **Web Application Interface**: [http://localhost:5173](http://localhost:5173)
+- **Interactive API Documentation (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Alternative API Specification (ReDoc)**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ---
 
-## 🔑 Pre-Configured Demo Credentials
+## Pre-Configured Demo Credentials
 
 | Role | Email | Password | Access Rights |
 | :--- | :--- | :--- | :--- |
@@ -287,4 +289,9 @@ npm run dev
 
 ## Developed by- Team Saridon
 
-| Sibam Prasad Sahoo || Suryansh Anand || Pritam Piyush || Varsha Sharma |
+
+- Sibam Prasad Sahoo
+- Suryansh Anand
+- Pritam Piyush
+- Varsha Sharma
+
