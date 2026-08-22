@@ -1,6 +1,6 @@
-# Dayflow HRMS 
+# DayFlow HR Management System
 
-**Dayflow HRMS** is a modern, full-stack Human Resource Management System built for the **Odoo x NMIT Hackathon 2026**. 
+**DayFlow HR Management System** is a modern, full-stack Human Resource Management System built for the **Odoo x NMIT Hackathon 2026**. 
 
 It features a dual-portal architecture separating standard **Employee Self-Service** from **HR Administration**, providing end-to-end workflows for attendance tracking, leave requests with overlap detection, salary structure management, and secure role-based access control.
 

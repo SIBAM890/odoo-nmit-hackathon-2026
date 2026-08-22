@@ -70,9 +70,7 @@ export default function AdminLayout() {
             fontSize: '0.9375rem',
             letterSpacing: '0.01em',
             whiteSpace: 'nowrap',
-          }}>
-            HR Management
-          </span>
+          }}>DayFlow HR Management System</span>
         </div>
 
         {/* Nav Links */}

@@ -42,7 +42,7 @@ export default function LoginPage() {
     }}>
       {/* Top Bar */}
       <header className="hr-toolbar">
-        <span className="hr-toolbar-title">HR Management System</span>
+        <span className="hr-toolbar-title">DayFlow HR Management System</span>
       </header>
 
       <div style={{
