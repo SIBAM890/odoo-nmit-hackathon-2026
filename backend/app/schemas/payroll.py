@@ -29,6 +29,8 @@ class PayrollUpdate(BaseModel):
         # Validation: components must be non-negative
         if self.basic < 0 or self.hra < 0 or self.deductions < 0:
             raise ValueError("Salary components must be non-negative")
+        if self.basic + self.hra - self.deductions < 0:
+            raise ValueError("Net salary cannot be negative (deductions exceed basic + hra)")
         return self
 
     @property
