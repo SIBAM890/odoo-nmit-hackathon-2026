@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+venv/
+env/
+backend/venv/
+backend/env/
+
+# Build artifacts
+frontend/dist/
+frontend/dist-ssr/
+frontend/build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Database
+backend/dayflow.db
+backend/dayflow.db-journal
+*.sqlite3
+
+# Uploads / Media
+backend/uploads/
+uploads/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Vite / React
+frontend/.eslintcache
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
