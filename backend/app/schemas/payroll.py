@@ -4,6 +4,8 @@ from typing import Optional
 from pydantic import BaseModel, model_validator
 
 
+from app.schemas.employee import EmployeeNested
+
 class PayrollOut(BaseModel):
     id: int
     employee_id: int
@@ -12,9 +14,8 @@ class PayrollOut(BaseModel):
     deductions: float
     net_salary: float
     updated_at: datetime
-    # Enriched for admin list
-    employee_name: Optional[str] = None
-    employee_code: Optional[str] = None
+    
+    employee: Optional[EmployeeNested] = None
 
     model_config = {"from_attributes": True}
 

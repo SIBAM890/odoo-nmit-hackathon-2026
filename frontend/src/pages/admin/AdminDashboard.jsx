@@ -109,7 +109,7 @@ export default function AdminDashboard() {
             {pendingLeaves.slice(0, 5).map(l => (
               <div key={l.id} className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5">
                 <div>
-                  <p className="text-sm font-medium text-slate-200">{l.employee_name}</p>
+                  <p className="text-sm font-medium text-slate-200">{l.employee?.full_name}</p>
                   <p className="text-xs text-slate-400 capitalize">{l.leave_type} Leave: {format(new Date(l.start_date), 'MMM d')} - {format(new Date(l.end_date), 'MMM d')}</p>
                 </div>
                 <StatusBadge status={l.status} />
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
             {todayAttendance.slice(0, 5).map(a => (
               <div key={a.id} className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5">
                 <div>
-                  <p className="text-sm font-medium text-slate-200">{a.employee_name}</p>
+                  <p className="text-sm font-medium text-slate-200">{a.employee?.full_name}</p>
                   <p className="text-xs text-slate-400">In: {a.check_in_time ? format(new Date(a.check_in_time + 'Z'), 'h:mm a') : '--'} | Out: {a.check_out_time ? format(new Date(a.check_out_time + 'Z'), 'h:mm a') : '--'}</p>
                 </div>
                 <StatusBadge status={a.status} />

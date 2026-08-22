@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from app.models.attendance import AttendanceStatus
 
 
+from app.schemas.employee import EmployeeNested
+
 class AttendanceOut(BaseModel):
     id: int
     employee_id: int
@@ -13,9 +15,8 @@ class AttendanceOut(BaseModel):
     check_in_time: Optional[datetime] = None
     check_out_time: Optional[datetime] = None
     status: AttendanceStatus
-    # Enriched fields for admin views
-    employee_name: Optional[str] = None
-    employee_code: Optional[str] = None
+    
+    employee: Optional[EmployeeNested] = None
 
     model_config = {"from_attributes": True}
 

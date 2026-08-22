@@ -4,6 +4,14 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class UserNested(BaseModel):
+    email: str
+    employee_id: str
+    role: str
+    is_verified: bool
+
+    model_config = {"from_attributes": True}
+
 class EmployeeOut(BaseModel):
     id: int
     user_id: int
@@ -14,11 +22,7 @@ class EmployeeOut(BaseModel):
     department: Optional[str] = None
     date_of_joining: Optional[date] = None
     profile_pic_url: Optional[str] = None
-    # Flatten user fields for convenience
-    email: Optional[str] = None
-    employee_id: Optional[str] = None
-    role: Optional[str] = None
-    is_verified: Optional[bool] = None
+    user: Optional[UserNested] = None
 
     model_config = {"from_attributes": True}
 

@@ -25,12 +25,6 @@ from app.schemas.attendance import AttendanceAdminUpdate, AttendanceOut
 router = APIRouter(prefix="/attendance", tags=["attendance"])
 
 
-def _enrich_attendance(record: Attendance) -> dict:
-    d = {c.name: getattr(record, c.name) for c in record.__table__.columns}
-    if record.employee and record.employee.user:
-        d["employee_name"] = record.employee.full_name
-        d["employee_code"] = record.employee.user.employee_id
-    return d
 
 
 @router.post("/check-in", response_model=AttendanceOut)
@@ -67,7 +61,7 @@ def check_in(
     db.add(record)
     db.commit()
     db.refresh(record)
-    return _enrich_attendance(record)
+    return record
 
 
 @router.post("/check-out", response_model=AttendanceOut)
@@ -99,7 +93,7 @@ def check_out(
 
     db.commit()
     db.refresh(record)
-    return _enrich_attendance(record)
+    return record
 
 
 @router.get("/me", response_model=List[AttendanceOut])
@@ -113,7 +107,7 @@ def my_attendance(
         .order_by(Attendance.date.desc())
         .all()
     )
-    return [_enrich_attendance(r) for r in records]
+    return [r for r in records]
 
 
 @router.get("", response_model=List[AttendanceOut])
@@ -133,7 +127,7 @@ def all_attendance(
     if date_to:
         q = q.filter(Attendance.date <= date_to)
     records = q.order_by(Attendance.date.desc()).all()
-    return [_enrich_attendance(r) for r in records]
+    return [r for r in records]
 
 
 @router.get("/{employee_id}", response_model=List[AttendanceOut])
@@ -148,7 +142,7 @@ def employee_attendance(
         .order_by(Attendance.date.desc())
         .all()
     )
-    return [_enrich_attendance(r) for r in records]
+    return [r for r in records]
 
 
 @router.put("/{record_id}", response_model=AttendanceOut)
@@ -166,4 +160,4 @@ def admin_update_attendance(
         setattr(record, field, value)
     db.commit()
     db.refresh(record)
-    return _enrich_attendance(record)
+    return record

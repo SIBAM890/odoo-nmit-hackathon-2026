@@ -73,7 +73,7 @@ export default function AdminAttendance() {
               {attendance.map(r => (
                 <tr key={r.id} className="table-row">
                   <td className="p-4 text-sm text-slate-300">{format(new Date(r.date), 'MMM d, yyyy')}</td>
-                  <td className="p-4 text-sm font-medium text-white">{r.employee_name} <span className="text-xs text-slate-500 font-normal">({r.employee_code})</span></td>
+                  <td className="p-4 text-sm font-medium text-white">{r.employee?.full_name} <span className="text-xs text-slate-500 font-normal">({r.employee?.user?.employee_id})</span></td>
                   <td className="p-4 text-sm text-slate-300">{r.check_in_time ? format(new Date(r.check_in_time + 'Z'), 'hh:mm a') : '-'}</td>
                   <td className="p-4 text-sm text-slate-300">{r.check_out_time ? format(new Date(r.check_out_time + 'Z'), 'hh:mm a') : '-'}</td>
                   <td className="p-4">

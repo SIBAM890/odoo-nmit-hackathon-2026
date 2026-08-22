@@ -110,7 +110,7 @@ export default function AdminPayroll() {
                 const isEditing = editingId === p.id
                 return (
                   <tr key={p.id} className="table-row">
-                    <td className="p-4 text-sm font-medium text-white">{p.employee_name} <span className="text-xs text-slate-500 font-normal">({p.employee_code})</span></td>
+                    <td className="p-4 text-sm font-medium text-white">{p.employee?.full_name} <span className="text-xs text-slate-500 font-normal">({p.employee?.user?.employee_id})</span></td>
                     
                     <td className="p-4">
                       {isEditing ? <input type="number" className="input-field py-1 px-2 w-24 text-xs" value={form.basic} onChange={e => setForm({...form, basic: Number(e.target.value)})} /> : <span className="text-sm text-slate-300">{formatCurrency(p.basic)}</span>}

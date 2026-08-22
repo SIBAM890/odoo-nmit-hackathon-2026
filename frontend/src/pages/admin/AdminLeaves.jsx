@@ -88,7 +88,7 @@ export default function AdminLeaves() {
             <tbody>
               {leaves.map(l => (
                 <tr key={l.id} className="table-row">
-                  <td className="p-4 text-sm font-medium text-white">{l.employee_name} <span className="text-xs text-slate-500 font-normal">({l.employee_code})</span></td>
+                  <td className="p-4 text-sm font-medium text-white">{l.employee?.full_name} <span className="text-xs text-slate-500 font-normal">({l.employee?.user?.employee_id})</span></td>
                   <td className="p-4 text-sm text-slate-300 capitalize">{l.leave_type}</td>
                   <td className="p-4 text-sm text-slate-300 whitespace-nowrap">{format(new Date(l.start_date), 'MMM d, yy')} - {format(new Date(l.end_date), 'MMM d, yy')}</td>
                   <td className="p-4 text-sm text-slate-400 max-w-[200px] truncate" title={l.remarks}>{l.remarks || '-'}</td>
@@ -117,7 +117,7 @@ export default function AdminLeaves() {
             <h2 className="text-xl font-bold text-white mb-2">
               {actionType === 'approved' ? 'Approve Leave Request' : 'Reject Leave Request'}
             </h2>
-            <p className="text-sm text-slate-400 mb-6">For {selectedLeave?.employee_name}</p>
+            <p className="text-sm text-slate-400 mb-6">For {selectedLeave?.employee?.full_name}</p>
             
             <div className="space-y-4">
               <div>

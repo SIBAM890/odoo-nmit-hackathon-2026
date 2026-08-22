@@ -22,15 +22,6 @@ from app.schemas.employee import EmployeeOut, EmployeeUpdateAdmin, EmployeeUpdat
 router = APIRouter(prefix="/employees", tags=["employees"])
 
 
-def _enrich(emp: Employee) -> dict:
-    """Merge employee + user fields into a flat dict for the response."""
-    d = {c.name: getattr(emp, c.name) for c in emp.__table__.columns}
-    if emp.user:
-        d["email"] = emp.user.email
-        d["employee_id"] = emp.user.employee_id
-        d["role"] = emp.user.role.value
-        d["is_verified"] = emp.user.is_verified
-    return d
 
 
 @router.get("/me", response_model=EmployeeOut)
@@ -38,7 +29,7 @@ def get_my_profile(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    return _enrich(current_employee)
+    return current_employee
 
 
 @router.put("/me", response_model=EmployeeOut)
@@ -51,7 +42,7 @@ def update_my_profile(
         setattr(current_employee, field, value)
     db.commit()
     db.refresh(current_employee)
-    return _enrich(current_employee)
+    return current_employee
 
 
 @router.get("", response_model=List[EmployeeOut])
@@ -60,7 +51,7 @@ def list_employees(
     db: Session = Depends(get_db),
 ):
     employees = db.query(Employee).all()
-    return [_enrich(e) for e in employees]
+    return [e for e in employees]
 
 
 @router.get("/{employee_id}", response_model=EmployeeOut)
@@ -72,7 +63,7 @@ def get_employee(
     emp = db.query(Employee).filter(Employee.id == employee_id).first()
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
-    return _enrich(emp)
+    return emp
 
 
 @router.put("/{employee_id}", response_model=EmployeeOut)
@@ -89,4 +80,4 @@ def update_employee(
         setattr(emp, field, value)
     db.commit()
     db.refresh(emp)
-    return _enrich(emp)
+    return emp

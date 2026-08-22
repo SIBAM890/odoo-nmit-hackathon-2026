@@ -20,12 +20,6 @@ from app.schemas.leave import LeaveCreate, LeaveDecision, LeaveOut
 router = APIRouter(prefix="/leaves", tags=["leaves"])
 
 
-def _enrich_leave(leave: LeaveRequest) -> dict:
-    d = {c.name: getattr(leave, c.name) for c in leave.__table__.columns}
-    if leave.employee and leave.employee.user:
-        d["employee_name"] = leave.employee.full_name
-        d["employee_code"] = leave.employee.user.employee_id
-    return d
 
 
 @router.post("", response_model=LeaveOut, status_code=201)
@@ -61,7 +55,7 @@ def apply_leave(
     db.add(leave)
     db.commit()
     db.refresh(leave)
-    return _enrich_leave(leave)
+    return leave
 
 
 @router.get("/me", response_model=List[LeaveOut])
@@ -75,7 +69,7 @@ def my_leaves(
         .order_by(LeaveRequest.id.desc())
         .all()
     )
-    return [_enrich_leave(l) for l in leaves]
+    return [l for l in leaves]
 
 
 @router.get("", response_model=List[LeaveOut])
@@ -84,7 +78,7 @@ def all_leaves(
     db: Session = Depends(get_db),
 ):
     leaves = db.query(LeaveRequest).order_by(LeaveRequest.id.desc()).all()
-    return [_enrich_leave(l) for l in leaves]
+    return [l for l in leaves]
 
 
 @router.put("/{leave_id}/approve", response_model=LeaveOut)
@@ -103,7 +97,7 @@ def approve_leave(
     leave.admin_comment = payload.admin_comment
     db.commit()
     db.refresh(leave)
-    return _enrich_leave(leave)
+    return leave
 
 
 @router.put("/{leave_id}/reject", response_model=LeaveOut)
@@ -122,4 +116,4 @@ def reject_leave(
     leave.admin_comment = payload.admin_comment
     db.commit()
     db.refresh(leave)
-    return _enrich_leave(leave)
+    return leave

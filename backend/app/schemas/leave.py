@@ -20,6 +20,7 @@ class LeaveCreate(BaseModel):
             raise ValueError("start_date cannot be in the past")
         return self
 
+from app.schemas.employee import EmployeeNested
 
 class LeaveOut(BaseModel):
     id: int
@@ -30,9 +31,8 @@ class LeaveOut(BaseModel):
     remarks: Optional[str] = None
     status: LeaveStatus
     admin_comment: Optional[str] = None
-    # Enriched for admin list
-    employee_name: Optional[str] = None
-    employee_code: Optional[str] = None
+    
+    employee: Optional[EmployeeNested] = None
 
     model_config = {"from_attributes": True}
 

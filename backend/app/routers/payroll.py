@@ -23,12 +23,6 @@ from datetime import datetime
 router = APIRouter(prefix="/payroll", tags=["payroll"])
 
 
-def _enrich_payroll(p: Payroll) -> dict:
-    d = {c.name: getattr(p, c.name) for c in p.__table__.columns}
-    if p.employee and p.employee.user:
-        d["employee_name"] = p.employee.full_name
-        d["employee_code"] = p.employee.user.employee_id
-    return d
 
 
 @router.get("/me", response_model=PayrollOut)
@@ -39,7 +33,7 @@ def my_payroll(
     payroll = db.query(Payroll).filter(Payroll.employee_id == current_employee.id).first()
     if not payroll:
         raise HTTPException(status_code=404, detail="No payroll record found")
-    return _enrich_payroll(payroll)
+    return payroll
 
 
 @router.get("", response_model=List[PayrollOut])
@@ -48,7 +42,7 @@ def all_payroll(
     db: Session = Depends(get_db),
 ):
     payrolls = db.query(Payroll).all()
-    return [_enrich_payroll(p) for p in payrolls]
+    return [p for p in payrolls]
 
 
 @router.put("/{employee_id}", response_model=PayrollOut)
@@ -74,4 +68,4 @@ def update_payroll(
     payroll.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(payroll)
-    return _enrich_payroll(payroll)
+    return payroll
