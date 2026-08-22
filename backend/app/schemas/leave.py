@@ -13,9 +13,11 @@ class LeaveCreate(BaseModel):
     remarks: Optional[str] = None
 
     @model_validator(mode="after")
-    def end_after_start(self) -> "LeaveCreate":
+    def validate_dates(self) -> "LeaveCreate":
         if self.end_date < self.start_date:
             raise ValueError("end_date must be on or after start_date")
+        if self.start_date < date.today():
+            raise ValueError("start_date cannot be in the past")
         return self
 
 

@@ -34,6 +34,22 @@ def apply_leave(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    overlapping = (
+        db.query(LeaveRequest)
+        .filter(
+            LeaveRequest.employee_id == current_employee.id,
+            LeaveRequest.status.in_([LeaveStatus.pending, LeaveStatus.approved]),
+            LeaveRequest.start_date <= payload.end_date,
+            LeaveRequest.end_date >= payload.start_date,
+        )
+        .first()
+    )
+    if overlapping:
+        raise HTTPException(
+            status_code=409,
+            detail="Leave request overlaps with an existing pending or approved request.",
+        )
+
     leave = LeaveRequest(
         employee_id=current_employee.id,
         leave_type=payload.leave_type,
