@@ -38,25 +38,25 @@ def check_in(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    today = date.today()
+    now = datetime.utcnow()
+    today = now.date()
+    
     existing = (
         db.query(Attendance)
         .filter(Attendance.employee_id == current_employee.id, Attendance.date == today)
         .first()
     )
-    if existing and existing.check_in_time:
-        raise HTTPException(
-            status_code=409,
-            detail="Already checked in today. Check out first.",
-        )
-
-    now = datetime.utcnow()
     if existing:
-        existing.check_in_time = now
-        existing.status = AttendanceStatus.present
-        db.commit()
-        db.refresh(existing)
-        return _enrich_attendance(existing)
+        if existing.check_out_time:
+            raise HTTPException(
+                status_code=409,
+                detail="Shift already completed for today. Multiple shifts are not currently supported.",
+            )
+        if existing.check_in_time:
+            raise HTTPException(
+                status_code=409,
+                detail="Already checked in today.",
+            )
 
     record = Attendance(
         employee_id=current_employee.id,
@@ -75,7 +75,9 @@ def check_out(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    today = date.today()
+    now = datetime.utcnow()
+    today = now.date()
+    
     record = (
         db.query(Attendance)
         .filter(Attendance.employee_id == current_employee.id, Attendance.date == today)
@@ -89,7 +91,6 @@ def check_out(
     if record.check_out_time:
         raise HTTPException(status_code=409, detail="Already checked out today.")
 
-    now = datetime.utcnow()
     record.check_out_time = now
 
     # Auto-compute status based on hours worked
