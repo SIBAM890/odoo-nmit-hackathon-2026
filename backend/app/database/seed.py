@@ -25,6 +25,7 @@ from app.models.user import UserRole
 
 def seed():
     # Create all tables
+    """Docstring for seed."""
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
@@ -227,3 +228,4 @@ def seed():
 
 if __name__ == "__main__":
     seed()
+

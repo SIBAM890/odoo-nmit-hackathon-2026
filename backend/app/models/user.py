@@ -15,11 +15,13 @@ from app.database.db import Base
 
 
 class UserRole(str, enum.Enum):
+    """Docstring for UserRole."""
     employee = "employee"
     admin = "admin"
 
 
 class User(Base):
+    """Docstring for User."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -34,3 +36,4 @@ class User(Base):
 
     # Relationship to employee profile (one-to-one)
     employee = relationship("Employee", back_populates="user", uselist=False)
+

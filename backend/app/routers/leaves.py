@@ -28,6 +28,7 @@ def apply_leave(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for apply_leave."""
     overlapping = (
         db.query(LeaveRequest)
         .filter(
@@ -63,6 +64,7 @@ def my_leaves(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for my_leaves."""
     leaves = (
         db.query(LeaveRequest)
         .filter(LeaveRequest.employee_id == current_employee.id)
@@ -77,6 +79,7 @@ def all_leaves(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for all_leaves."""
     leaves = db.query(LeaveRequest).order_by(LeaveRequest.id.desc()).all()
     return [l for l in leaves]
 
@@ -88,6 +91,7 @@ def approve_leave(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for approve_leave."""
     leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id).first()
     if not leave:
         raise HTTPException(status_code=404, detail="Leave request not found")
@@ -107,6 +111,7 @@ def reject_leave(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for reject_leave."""
     leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id).first()
     if not leave:
         raise HTTPException(status_code=404, detail="Leave request not found")
@@ -117,3 +122,4 @@ def reject_leave(
     db.commit()
     db.refresh(leave)
     return leave
+

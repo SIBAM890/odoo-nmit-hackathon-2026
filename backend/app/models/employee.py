@@ -14,6 +14,7 @@ from app.database.db import Base
 
 
 class Employee(Base):
+    """Docstring for Employee."""
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -31,3 +32,4 @@ class Employee(Base):
     attendance_records = relationship("Attendance", back_populates="employee")
     leave_requests = relationship("LeaveRequest", back_populates="employee")
     payroll = relationship("Payroll", back_populates="employee", uselist=False)
+

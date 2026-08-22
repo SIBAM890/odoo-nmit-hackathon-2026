@@ -14,6 +14,7 @@ from app.database.db import Base
 
 
 class Payroll(Base):
+    """Docstring for Payroll."""
     __tablename__ = "payroll"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -25,3 +26,4 @@ class Payroll(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     employee = relationship("Employee", back_populates="payroll")
+

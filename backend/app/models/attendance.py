@@ -17,6 +17,7 @@ from app.database.db import Base
 
 
 class AttendanceStatus(str, enum.Enum):
+    """Docstring for AttendanceStatus."""
     present = "present"
     absent = "absent"
     half_day = "half-day"
@@ -24,6 +25,7 @@ class AttendanceStatus(str, enum.Enum):
 
 
 class Attendance(Base):
+    """Docstring for Attendance."""
     __tablename__ = "attendance"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -34,3 +36,4 @@ class Attendance(Base):
     status = Column(Enum(AttendanceStatus), default=AttendanceStatus.absent, nullable=False)
 
     employee = relationship("Employee", back_populates="attendance_records")
+

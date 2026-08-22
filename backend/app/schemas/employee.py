@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class UserNested(BaseModel):
+    """Docstring for UserNested."""
     email: str
     employee_id: str
     role: str
@@ -13,6 +14,7 @@ class UserNested(BaseModel):
     model_config = {"from_attributes": True}
 
 class EmployeeOut(BaseModel):
+    """Docstring for EmployeeOut."""
     id: int
     user_id: int
     full_name: str
@@ -43,3 +45,4 @@ class EmployeeUpdateAdmin(BaseModel):
     department: Optional[str] = None
     date_of_joining: Optional[date] = None
     profile_pic_url: Optional[str] = None
+

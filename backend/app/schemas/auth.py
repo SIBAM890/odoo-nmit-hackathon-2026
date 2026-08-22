@@ -32,6 +32,7 @@ def _validate_password_strength(v: str) -> str:
 
 
 class RegisterRequest(BaseModel):
+    """Docstring for RegisterRequest."""
     employee_id: str
     email: EmailStr
     password: str
@@ -40,15 +41,18 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def strong_password(cls, v: str) -> str:
+        """Docstring for strong_password."""
         return _validate_password_strength(v)
 
 
 class LoginRequest(BaseModel):
+    """Docstring for LoginRequest."""
     email: EmailStr
     password: str
 
 
 class TokenResponse(BaseModel):
+    """Docstring for TokenResponse."""
     access_token: str
     token_type: str = "bearer"
     role: UserRole
@@ -56,6 +60,7 @@ class TokenResponse(BaseModel):
 
 
 class UserOut(BaseModel):
+    """Docstring for UserOut."""
     id: int
     employee_id: str
     email: str
@@ -67,5 +72,7 @@ class UserOut(BaseModel):
 
 
 class VerifyEmailResponse(BaseModel):
+    """Docstring for VerifyEmailResponse."""
     message: str
     is_verified: bool
+

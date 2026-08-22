@@ -7,6 +7,7 @@ from pydantic import BaseModel, model_validator
 from app.schemas.employee import EmployeeNested
 
 class PayrollOut(BaseModel):
+    """Docstring for PayrollOut."""
     id: int
     employee_id: int
     basic: float
@@ -21,6 +22,7 @@ class PayrollOut(BaseModel):
 
 
 class PayrollUpdate(BaseModel):
+    """Docstring for PayrollUpdate."""
     basic: float
     hra: float
     deductions: float
@@ -28,6 +30,7 @@ class PayrollUpdate(BaseModel):
     @model_validator(mode="after")
     def compute_net(self) -> "PayrollUpdate":
         # Validation: components must be non-negative
+        """Docstring for compute_net."""
         if self.basic < 0 or self.hra < 0 or self.deductions < 0:
             raise ValueError("Salary components must be non-negative")
         if self.basic + self.hra - self.deductions < 0:
@@ -36,4 +39,6 @@ class PayrollUpdate(BaseModel):
 
     @property
     def net_salary(self) -> float:
+        """Docstring for net_salary."""
         return self.basic + self.hra - self.deductions
+

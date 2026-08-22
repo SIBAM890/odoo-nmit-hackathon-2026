@@ -32,6 +32,7 @@ def check_in(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for check_in."""
     now = datetime.utcnow()
     today = now.date()
     
@@ -69,6 +70,7 @@ def check_out(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for check_out."""
     now = datetime.utcnow()
     today = now.date()
     
@@ -101,6 +103,7 @@ def my_attendance(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for my_attendance."""
     records = (
         db.query(Attendance)
         .filter(Attendance.employee_id == current_employee.id)
@@ -136,6 +139,7 @@ def employee_attendance(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for employee_attendance."""
     records = (
         db.query(Attendance)
         .filter(Attendance.employee_id == employee_id)
@@ -161,3 +165,4 @@ def admin_update_attendance(
     db.commit()
     db.refresh(record)
     return record
+

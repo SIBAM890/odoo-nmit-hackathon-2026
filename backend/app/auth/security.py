@@ -19,14 +19,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
+    """Docstring for hash_password."""
     return pwd_context.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
+    """Docstring for verify_password."""
     return pwd_context.verify(plain, hashed)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Docstring for create_access_token."""
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -46,3 +49,4 @@ def decode_token(token: str) -> dict:
 def generate_verify_token() -> str:
     """Cryptographically random token for email verification simulation."""
     return secrets.token_urlsafe(32)
+

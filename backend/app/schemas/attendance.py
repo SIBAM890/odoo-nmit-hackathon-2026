@@ -9,6 +9,7 @@ from app.models.attendance import AttendanceStatus
 from app.schemas.employee import EmployeeNested
 
 class AttendanceOut(BaseModel):
+    """Docstring for AttendanceOut."""
     id: int
     employee_id: int
     date: date
@@ -26,3 +27,4 @@ class AttendanceAdminUpdate(BaseModel):
     status: Optional[AttendanceStatus] = None
     check_in_time: Optional[datetime] = None
     check_out_time: Optional[datetime] = None
+

@@ -7,6 +7,7 @@ from app.models.leave_request import LeaveStatus, LeaveType
 
 
 class LeaveCreate(BaseModel):
+    """Docstring for LeaveCreate."""
     leave_type: LeaveType
     start_date: date
     end_date: date
@@ -14,6 +15,7 @@ class LeaveCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_dates(self) -> "LeaveCreate":
+        """Docstring for validate_dates."""
         if self.end_date < self.start_date:
             raise ValueError("end_date must be on or after start_date")
         if self.start_date < date.today():
@@ -23,6 +25,7 @@ class LeaveCreate(BaseModel):
 from app.schemas.employee import EmployeeNested
 
 class LeaveOut(BaseModel):
+    """Docstring for LeaveOut."""
     id: int
     employee_id: int
     leave_type: LeaveType
@@ -40,3 +43,4 @@ class LeaveOut(BaseModel):
 class LeaveDecision(BaseModel):
     """Admin approve/reject payload."""
     admin_comment: Optional[str] = None
+

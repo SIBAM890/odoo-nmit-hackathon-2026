@@ -38,6 +38,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/register", response_model=dict, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     # Check uniqueness
+    """Docstring for register."""
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=409, detail="Email already registered")
     if db.query(User).filter(User.employee_id == payload.employee_id).first():
@@ -71,6 +72,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.get("/verify/{token}", response_model=VerifyEmailResponse)
 def verify_email(token: str, db: Session = Depends(get_db)):
+    """Docstring for verify_email."""
     user = db.query(User).filter(User.verify_token == token).first()
     if not user:
         raise HTTPException(status_code=404, detail="Invalid or expired verification token")
@@ -85,6 +87,7 @@ def verify_email(token: str, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    """Docstring for login."""
     user = db.query(User).filter(User.email == payload.email).first()
     if not user:
         raise HTTPException(status_code=401, detail="No account found with this email")
@@ -101,4 +104,6 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserOut)
 def me(current_user: User = Depends(get_current_user)):
+    """Docstring for me."""
     return current_user
+

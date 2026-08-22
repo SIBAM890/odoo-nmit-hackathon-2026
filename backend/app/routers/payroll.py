@@ -30,6 +30,7 @@ def my_payroll(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for my_payroll."""
     payroll = db.query(Payroll).filter(Payroll.employee_id == current_employee.id).first()
     if not payroll:
         raise HTTPException(status_code=404, detail="No payroll record found")
@@ -41,6 +42,7 @@ def all_payroll(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for all_payroll."""
     payrolls = db.query(Payroll).all()
     return [p for p in payrolls]
 
@@ -52,6 +54,7 @@ def update_payroll(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for update_payroll."""
     payroll = db.query(Payroll).filter(Payroll.employee_id == employee_id).first()
     if not payroll:
         # Create one if it doesn't exist yet
@@ -69,3 +72,4 @@ def update_payroll(
     db.commit()
     db.refresh(payroll)
     return payroll
+

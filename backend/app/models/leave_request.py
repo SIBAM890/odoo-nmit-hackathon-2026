@@ -14,18 +14,21 @@ from app.database.db import Base
 
 
 class LeaveType(str, enum.Enum):
+    """Docstring for LeaveType."""
     paid = "paid"
     sick = "sick"
     unpaid = "unpaid"
 
 
 class LeaveStatus(str, enum.Enum):
+    """Docstring for LeaveStatus."""
     pending = "pending"
     approved = "approved"
     rejected = "rejected"
 
 
 class LeaveRequest(Base):
+    """Docstring for LeaveRequest."""
     __tablename__ = "leave_requests"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -38,3 +41,4 @@ class LeaveRequest(Base):
     admin_comment = Column(Text, nullable=True)
 
     employee = relationship("Employee", back_populates="leave_requests")
+

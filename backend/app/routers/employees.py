@@ -29,6 +29,7 @@ def get_my_profile(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for get_my_profile."""
     return current_employee
 
 
@@ -38,6 +39,7 @@ def update_my_profile(
     current_employee: Employee = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
+    """Docstring for update_my_profile."""
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(current_employee, field, value)
     db.commit()
@@ -50,6 +52,7 @@ def list_employees(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for list_employees."""
     employees = db.query(Employee).all()
     return [e for e in employees]
 
@@ -60,6 +63,7 @@ def get_employee(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for get_employee."""
     emp = db.query(Employee).filter(Employee.id == employee_id).first()
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
@@ -73,6 +77,7 @@ def update_employee(
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    """Docstring for update_employee."""
     emp = db.query(Employee).filter(Employee.id == employee_id).first()
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
@@ -81,3 +86,4 @@ def update_employee(
     db.commit()
     db.refresh(emp)
     return emp
+

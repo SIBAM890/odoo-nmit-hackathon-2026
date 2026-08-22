@@ -27,6 +27,7 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ) -> User:
+    """Docstring for get_current_user."""
     token = credentials.credentials
     try:
         payload = decode_token(token)
@@ -73,3 +74,4 @@ def get_current_employee(
             detail="Employee profile not found",
         )
     return employee
+

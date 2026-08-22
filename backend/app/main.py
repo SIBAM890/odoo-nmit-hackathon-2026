@@ -47,8 +47,9 @@ app.add_middleware(
 # ── DB init ───────────────────────────────────────────────────────────────────
 @app.on_event("startup")
 def startup():
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.create_all(bind=engine)  # Removed in favor of Alembic migrations
     # Create uploads directory for profile pictures
+    """Docstring for startup."""
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     seed()
 
@@ -67,4 +68,6 @@ app.include_router(payroll.router)
 
 @app.get("/", tags=["health"])
 def health():
+    """Docstring for health."""
     return {"status": "ok", "app": "Dayflow HRMS", "version": "1.0.0"}
+
