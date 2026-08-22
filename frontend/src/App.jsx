@@ -30,9 +30,21 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster position="top-right" toastOptions={{
-          style: { background: '#1e1e2e', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
-        }} />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: '#fff',
+              color: 'rgba(0,0,0,0.87)',
+              border: '1px solid rgba(0,0,0,0.12)',
+              boxShadow: '0 3px 6px rgba(0,0,0,0.15)',
+              borderRadius: '4px',
+              fontSize: '0.875rem',
+            },
+            success: { iconTheme: { primary: '#4caf50', secondary: '#fff' } },
+            error: { iconTheme: { primary: '#f44336', secondary: '#fff' } },
+          }}
+        />
         <Routes>
           {/* Public */}
           <Route path="/" element={<Navigate to="/login" replace />} />

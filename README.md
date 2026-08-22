@@ -4,25 +4,25 @@ Dayflow is a modern, responsive, and production-grade Human Resource Management 
 
 It features a split-role architecture separating standard Employees from HR Administrators, providing a seamless workflow for tracking attendance, managing leave requests, and handling payroll structures.
 
-## 🚀 Features
-
-### **Employee Portal**
-- **Dashboard**: Quick overview of attendance metrics, live check-in/out, and pending leaves.
-- **Attendance History**: Detailed log of all daily check-ins and check-outs.
-- **Leave Management**: Submit new leave requests (Sick, Paid, Unpaid) and track approval status.
-- **Payroll**: Read-only view of current salary structure (Basic, HRA, Deductions, Net Pay).
-- **Profile Management**: Update personal contact details and profile avatars.
-
-### **Admin Portal**
-- **Admin Dashboard**: Company-wide HR metrics and actionable pending queues.
-- **Employee Directory**: Searchable list of all staff, with a detailed edit view for managing roles and job titles.
-- **Attendance Oversight**: Override capabilities to manually fix or adjust employee attendance records.
-- **Leave Approvals**: Dedicated queue for reviewing, approving, or rejecting leave requests with optional admin feedback.
-- **Payroll Setup**: Initialize and update salary components for any employee dynamically.
-
+## Features
+ 
+### Employee Portal
+ 
+* **Dashboard** — quick overview of attendance metrics, live check-in/out, and pending leaves
+* **Attendance History** — detailed log of all daily check-ins and check-outs
+* **Leave Management** — submit new leave requests (Sick, Paid, Unpaid) and track approval status
+* **Payroll** — read-only view of current salary structure (Basic, HRA, Deductions, Net Pay)
+* **Profile Management** — update personal contact details and profile avatars
+### Admin Portal
+ 
+* **Admin Dashboard** — company-wide HR metrics and actionable pending queues
+* **Employee Directory** — searchable staff list with a detailed edit view for managing roles and job titles
+* **Attendance Oversight** — override capabilities to manually fix or adjust employee attendance records
+* **Leave Approvals** — dedicated queue for reviewing, approving, or rejecting leave requests with optional admin feedback
+* **Payroll Setup** — initialize and update salary components for any employee dynamically
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend**
 - React 18 (Vite)
@@ -40,16 +40,51 @@ It features a split-role architecture separating standard Employees from HR Admi
 
 ---
 
-## 🔒 Security Principles
-
-- **No Mock Auth**: Full JWT implementation. Roles (`admin`, `employee`) are embedded securely in the token payload.
-- **Route Guards**: Frontend blocks unauthorized access to Admin pages.
-- **Server-Side Enforcement**: Backend enforces data ownership. An employee cannot view or edit another employee's attendance, leaves, or payroll.
-- **Password Hashing**: Passwords are never stored in plaintext (uses `bcrypt`).
-
+## Security Principles
+ 
+| Principle | Details |
+| --- | :-- |
+|  No Mock Auth | Full JWT implementation — roles (`admin`, `employee`) are embedded securely in the token payload |
+|  Route Guards | Frontend blocks unauthorized access to Admin pages |
+|  Server-Side Enforcement | Backend enforces data ownership — an employee cannot view or edit another employee's attendance, leaves, or payroll |
+|  Password Hashing | Passwords are never stored in plaintext (uses `bcrypt`) |
+ 
+---
+##  System Overview
+ 
+```mermaid
+flowchart TB
+ 
+    User[User]
+    Auth[JWT Authentication]
+ 
+    Dashboard[Role-Based Dashboard]
+ 
+    Emp[Employee Portal]
+    Admin[Admin Portal]
+ 
+    User --> Auth
+    Auth --> Dashboard
+ 
+    Dashboard --> Emp
+    Dashboard --> Admin
+ 
+    Emp --> Att[Attendance History]
+    Emp --> Leave[Leave Requests]
+    Emp --> Pay[Payroll · Read-only]
+    Emp --> Prof[Profile]
+ 
+    Admin --> Dir[Employee Directory]
+    Admin --> Over[Attendance Oversight]
+    Admin --> Appr[Leave Approvals]
+    Admin --> Setup[Payroll Setup]
+ 
+    Appr --> Leave
+```
+ 
 ---
 
-## 💻 How to Run Locally
+##  How to Run Locally
 
 ### 1. Start the Backend API
 ```bash
@@ -86,7 +121,7 @@ npm run dev
 
 ---
 
-## 🧪 Demo Credentials
+## Demo Credentials
 
 The database is seeded with two default users:
 
@@ -97,3 +132,9 @@ The database is seeded with two default users:
 **Employee Role:**
 - **Email:** `alice@dayflow.io`
 - **Password:** `Alice@123`
+
+---
+
+## Developed by- Team Saridon
+
+| Sibam Prasad Sahoo || Suryansh Anand || Pritam Piyush || Varsha Sharma |

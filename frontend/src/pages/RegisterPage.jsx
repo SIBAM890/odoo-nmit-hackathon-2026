@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Zap, Mail, Lock, User, Hash, CheckCircle, AlertCircle, X, Check } from 'lucide-react'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 
@@ -12,28 +11,45 @@ function PasswordStrength({ password }) {
     { label: 'Number', pass: /\d/.test(password) },
     { label: 'Special character', pass: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
   ]
-  const passed = checks.filter((c) => c.pass).length
+  const passed = checks.filter(c => c.pass).length
   const percent = (passed / checks.length) * 100
-  const color = percent < 40 ? '#ef4444' : percent < 80 ? '#f59e0b' : '#10b981'
+  const color = percent < 40 ? '#f44336' : percent < 80 ? '#ff9800' : '#4caf50'
 
   if (!password) return null
 
   return (
-    <div className="mt-2 space-y-2">
-      <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${percent}%`, backgroundColor: color }}
-        />
+    <div style={{ marginTop: 8 }}>
+      <div style={{
+        height: 4,
+        background: 'rgba(0,0,0,0.12)',
+        borderRadius: 2,
+        overflow: 'hidden',
+        marginBottom: 8,
+      }}>
+        <div style={{
+          height: '100%',
+          width: `${percent}%`,
+          background: color,
+          transition: 'width 0.3s ease',
+          borderRadius: 2,
+        }} />
       </div>
-      <ul className="grid grid-cols-2 gap-1">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 8px' }}>
         {checks.map(({ label, pass }) => (
-          <li key={label} className={`flex items-center gap-1.5 text-[11px] ${pass ? 'text-emerald-400' : 'text-slate-500'}`}>
-            {pass ? <Check size={10} /> : <X size={10} />}
+          <span key={label} style={{
+            fontSize: '0.7rem',
+            color: pass ? '#4caf50' : 'rgba(0,0,0,0.38)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+          }}>
+            <span className="material-icons" style={{ fontSize: '0.8rem' }}>
+              {pass ? 'check_circle' : 'radio_button_unchecked'}
+            </span>
             {label}
-          </li>
+          </span>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }
@@ -57,7 +73,7 @@ export default function RegisterPage() {
     } catch (err) {
       const detail = err.response?.data?.detail
       if (Array.isArray(detail)) {
-        setError(detail.map((d) => d.msg).join('. '))
+        setError(detail.map(d => d.msg).join('. '))
       } else {
         setError(detail || 'Registration failed')
       }
@@ -78,137 +94,172 @@ export default function RegisterPage() {
 
   if (verifyToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-md animate-fade-in glass-card p-10 text-center">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5">
-            <CheckCircle className="text-emerald-400" size={32} />
+      <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
+        <header className="hr-toolbar">
+          <span className="hr-toolbar-title">HR Management System</span>
+        </header>
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+        }}>
+          <div className="hr-card animate-fade-in" style={{ maxWidth: 420, width: '100%', textAlign: 'center' }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              background: '#e8f5e9', border: '2px solid #a5d6a7',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 20px',
+            }}>
+              <span className="material-icons" style={{ color: '#4caf50', fontSize: '2rem' }}>check_circle</span>
+            </div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 500, marginBottom: 8 }}>Verify your email</h2>
+            <p style={{ color: 'rgba(0,0,0,0.54)', fontSize: '0.875rem', marginBottom: 12 }}>
+              In production, a verification link would be sent to your email.
+              For this demo, click below to simulate verification.
+            </p>
+            <div style={{
+              background: '#f5f5f5', border: '1px solid rgba(0,0,0,0.12)',
+              borderRadius: 4, padding: '8px 12px', marginBottom: 20,
+              fontFamily: 'monospace', fontSize: '0.75rem', color: '#3f51b5',
+              wordBreak: 'break-all',
+            }}>
+              {verifyToken}
+            </div>
+            <button onClick={handleVerify} className="btn-primary" style={{ width: '100%', justifyContent: 'center', height: 42 }}>
+              Verify Email &amp; Continue
+            </button>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)', marginTop: 12 }}>
+              This simulates the /auth/verify/{'{token}'} endpoint.
+            </p>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Verify your email</h2>
-          <p className="text-slate-400 text-sm mb-2">
-            In production, a verification link would be sent to your email.
-            For this demo, click the button below to simulate verification.
-          </p>
-          <div className="bg-white/5 rounded-lg p-3 mb-6 font-mono text-xs text-indigo-300 break-all">
-            {verifyToken}
-          </div>
-          <button onClick={handleVerify} className="btn-primary w-full justify-center py-3">
-            Verify Email & Continue
-          </button>
-          <p className="text-xs text-slate-500 mt-4">
-            This simulates the /auth/verify/{'{token}'} endpoint — the full state machine is real.
-          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[400px] h-[400px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
+      <header className="hr-toolbar">
+        <span className="hr-toolbar-title">HR Management System</span>
+      </header>
 
-      <div className="w-full max-w-md animate-fade-in">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-6 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <Zap size={16} className="text-white" />
+      <div style={{
+        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+      }}>
+        <div style={{ width: '100%', maxWidth: 420 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%', background: '#3f51b5',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 16px',
+            }}>
+              <span className="material-icons" style={{ color: 'white', fontSize: '2rem' }}>person_add</span>
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">Dayflow</span>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 500, color: 'rgba(0,0,0,0.87)', marginBottom: 4 }}>
+              Create account
+            </h1>
+            <p style={{ color: 'rgba(0,0,0,0.54)', fontSize: '0.875rem' }}>
+              Join your team on Dayflow HRMS
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Create account</h1>
-          <p className="text-slate-400 text-sm">Join your team on Dayflow</p>
-        </div>
 
-        <div className="glass-card p-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="flex items-center gap-3 p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                <AlertCircle size={16} className="shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
+          <div className="hr-card animate-fade-in">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {error && (
+                <div style={{
+                  background: '#ffebee', border: '1px solid #ef9a9a', borderRadius: 4,
+                  padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8,
+                  color: '#c62828', fontSize: '0.875rem',
+                }}>
+                  <span className="material-icons" style={{ fontSize: '1.1rem' }}>error_outline</span>
+                  {error}
+                </div>
+              )}
 
-            <div>
-              <label className="label">Employee ID</label>
-              <div className="relative">
-                <Hash size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+              <div>
+                <label className="label">Employee ID</label>
                 <input
                   id="reg-employee-id"
                   type="text"
-                  className="input-field pl-10"
+                  className="input-field"
                   placeholder="EMP001"
                   value={form.employee_id}
-                  onChange={(e) => setForm({ ...form, employee_id: e.target.value })}
+                  onChange={e => setForm({ ...form, employee_id: e.target.value })}
                   required
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="label">Email address</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+              <div>
+                <label className="label">Email address</label>
                 <input
                   id="reg-email"
                   type="email"
-                  className="input-field pl-10"
+                  className="input-field"
                   placeholder="you@company.com"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={e => setForm({ ...form, email: e.target.value })}
                   required
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="label">Password</label>
-              <div className="relative">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  id="reg-password"
-                  type={showPass ? 'text' : 'password'}
-                  className="input-field pl-10 pr-10"
-                  placeholder="Create a strong password"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+              <div>
+                <label className="label">Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    id="reg-password"
+                    type={showPass ? 'text' : 'password'}
+                    className="input-field"
+                    placeholder="Create a strong password"
+                    value={form.password}
+                    onChange={e => setForm({ ...form, password: e.target.value })}
+                    style={{ paddingRight: 40 }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    style={{
+                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                      background: 'transparent', border: 'none', cursor: 'pointer',
+                      color: 'rgba(0,0,0,0.54)', display: 'flex', alignItems: 'center',
+                    }}
+                  >
+                    <span className="material-icons" style={{ fontSize: '1.1rem' }}>
+                      {showPass ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
+                <PasswordStrength password={form.password} />
+              </div>
+
+              <div>
+                <label className="label">Role</label>
+                <select
+                  id="reg-role"
+                  className="input-field"
+                  value={form.role}
+                  onChange={e => setForm({ ...form, role: e.target.value })}
                 >
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+                  <option value="employee">Employee</option>
+                  <option value="admin">Admin / HR</option>
+                </select>
               </div>
-              <PasswordStrength password={form.password} />
-            </div>
 
-            <div>
-              <label className="label">Role</label>
-              <select
-                id="reg-role"
-                className="input-field"
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
+              <button
+                id="reg-submit"
+                type="submit"
+                className="btn-primary"
+                disabled={loading}
+                style={{ width: '100%', justifyContent: 'center', marginTop: 4, height: 42 }}
               >
-                <option value="employee">Employee</option>
-                <option value="admin">Admin / HR</option>
-              </select>
-            </div>
+                {loading ? <span className="spinner spinner-sm" /> : 'Create Account'}
+              </button>
+            </form>
+          </div>
 
-            <button id="reg-submit" type="submit" className="btn-primary w-full justify-center py-3 text-base mt-2" disabled={loading}>
-              {loading ? <span className="spinner" /> : 'Create Account'}
-            </button>
-          </form>
+          <p style={{ textAlign: 'center', marginTop: 16, fontSize: '0.875rem', color: 'rgba(0,0,0,0.54)' }}>
+            Already have an account?{' '}
+            <Link to="/login" style={{ color: '#3f51b5', fontWeight: 500 }}>Sign in</Link>
+          </p>
         </div>
-
-        <p className="text-center text-sm text-slate-500 mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-            Sign in
-          </Link>
-        </p>
       </div>
     </div>
   )

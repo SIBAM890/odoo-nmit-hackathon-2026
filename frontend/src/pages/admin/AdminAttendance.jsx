@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
-import { Edit2, X, Save } from 'lucide-react'
 
 function StatusBadge({ status }) {
   const map = {
     present: 'badge-success',
     absent: 'badge-error',
     'half-day': 'badge-warning',
+    half_day: 'badge-warning',
     leave: 'badge-info',
   }
-  return <span className={`badge ${map[status] || 'badge-neutral'}`}>{status}</span>
+  return <span className={`badge ${map[status] || 'badge-neutral'}`}>{status?.replace('_', '-')}</span>
 }
 
 export default function AdminAttendance() {
@@ -20,9 +20,7 @@ export default function AdminAttendance() {
   const [editingId, setEditingId] = useState(null)
   const [editStatus, setEditStatus] = useState('')
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  useEffect(() => { fetchData() }, [])
 
   function fetchData() {
     api.get('/attendance')
@@ -42,70 +40,119 @@ export default function AdminAttendance() {
       toast.success('Attendance updated')
       setEditingId(null)
       fetchData()
-    } catch (err) {
+    } catch {
       toast.error('Update failed')
     }
   }
 
-  if (loading) return <div className="flex justify-center items-center h-64"><div className="spinner border-t-purple-500" /></div>
+  if (loading) {
+    return <div className="loading-center"><span className="spinner" /><span>Loading attendance…</span></div>
+  }
 
   return (
-    <div className="animate-fade-in space-y-6 max-w-5xl">
-      <div>
-        <h1 className="page-title">Attendance Oversight</h1>
-        <p className="text-slate-400 mt-1">Monitor and correct employee attendance records.</p>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <h1 className="page-title">Attendance Oversight</h1>
+          <p style={{ color: 'rgba(0,0,0,0.54)', marginTop: 4, fontSize: '0.875rem' }}>
+            Monitor and correct employee attendance records
+          </p>
+        </div>
+        <button className="btn-secondary" onClick={fetchData}>
+          <span className="material-icons" style={{ fontSize: '1rem' }}>refresh</span>
+          Refresh
+        </button>
       </div>
 
-      <div className="glass-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="table-header text-xs text-slate-400 uppercase">
-                <th className="p-4 font-medium">Date</th>
-                <th className="p-4 font-medium">Employee</th>
-                <th className="p-4 font-medium">Check In</th>
-                <th className="p-4 font-medium">Check Out</th>
-                <th className="p-4 font-medium">Status</th>
-                <th className="p-4 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {attendance.map(r => (
-                <tr key={r.id} className="table-row">
-                  <td className="p-4 text-sm text-slate-300">{format(new Date(r.date), 'MMM d, yyyy')}</td>
-                  <td className="p-4 text-sm font-medium text-white">{r.employee?.full_name} <span className="text-xs text-slate-500 font-normal">({r.employee?.user?.employee_id})</span></td>
-                  <td className="p-4 text-sm text-slate-300">{r.check_in_time ? format(new Date(r.check_in_time + 'Z'), 'hh:mm a') : '-'}</td>
-                  <td className="p-4 text-sm text-slate-300">{r.check_out_time ? format(new Date(r.check_out_time + 'Z'), 'hh:mm a') : '-'}</td>
-                  <td className="p-4">
+      <div className="hr-table-wrap" style={{ overflowX: 'auto' }}>
+        <table className="hr-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Employee</th>
+              <th>Check In</th>
+              <th>Check Out</th>
+              <th>Hours</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attendance.map(r => {
+              let hours = null
+              if (r.check_in_time && r.check_out_time) {
+                const ms = new Date(r.check_out_time + 'Z') - new Date(r.check_in_time + 'Z')
+                hours = (ms / 3_600_000).toFixed(1)
+              }
+              return (
+                <tr key={r.id}>
+                  <td style={{ whiteSpace: 'nowrap', color: 'rgba(0,0,0,0.7)' }}>
+                    {format(new Date(r.date), 'MMM d, yyyy')}
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 500 }}>{r.employee?.full_name}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)', marginLeft: 6 }}>
+                      ({r.employee?.user?.employee_id})
+                    </span>
+                  </td>
+                  <td style={{ color: 'rgba(0,0,0,0.7)' }}>
+                    {r.check_in_time ? format(new Date(r.check_in_time + 'Z'), 'hh:mm a') : '—'}
+                  </td>
+                  <td style={{ color: 'rgba(0,0,0,0.7)' }}>
+                    {r.check_out_time ? format(new Date(r.check_out_time + 'Z'), 'hh:mm a') : '—'}
+                  </td>
+                  <td style={{ color: hours ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.38)' }}>
+                    {hours ? `${hours}h` : '—'}
+                  </td>
+                  <td>
                     {editingId === r.id ? (
-                      <select className="input-field py-1 px-2 text-xs" value={editStatus} onChange={e => setEditStatus(e.target.value)}>
+                      <select
+                        className="input-field"
+                        style={{ padding: '4px 8px', fontSize: '0.8125rem', width: 'auto' }}
+                        value={editStatus}
+                        onChange={e => setEditStatus(e.target.value)}
+                      >
                         <option value="present">Present</option>
                         <option value="absent">Absent</option>
-                        <option value="half-day">Half Day</option>
+                        <option value="half_day">Half Day</option>
                         <option value="leave">Leave</option>
                       </select>
                     ) : (
                       <StatusBadge status={r.status} />
                     )}
                   </td>
-                  <td className="p-4 text-right">
+                  <td>
                     {editingId === r.id ? (
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => setEditingId(null)} className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-slate-400"><X size={14} /></button>
-                        <button onClick={() => handleSave(r.id)} className="p-1.5 rounded bg-purple-500/20 hover:bg-purple-500/40 text-purple-400"><Save size={14} /></button>
+                      <div style={{ display: 'flex', gap: 4 }}>
+                        <button onClick={() => setEditingId(null)} className="btn-icon" title="Cancel">
+                          <span className="material-icons" style={{ fontSize: '1rem' }}>close</span>
+                        </button>
+                        <button onClick={() => handleSave(r.id)} className="btn-icon green" title="Save">
+                          <span className="material-icons" style={{ fontSize: '1rem' }}>save</span>
+                        </button>
                       </div>
                     ) : (
-                      <button onClick={() => { setEditingId(r.id); setEditStatus(r.status); }} className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-slate-400">
-                        <Edit2 size={14} />
+                      <button
+                        onClick={() => { setEditingId(r.id); setEditStatus(r.status) }}
+                        className="btn-icon indigo"
+                        title="Edit status"
+                      >
+                        <span className="material-icons" style={{ fontSize: '1rem' }}>edit</span>
                       </button>
                     )}
                   </td>
                 </tr>
-              ))}
-              {attendance.length === 0 && <tr><td colSpan="6" className="p-8 text-center text-slate-400">No attendance records.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+              )
+            })}
+            {attendance.length === 0 && (
+              <tr>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 32, color: 'rgba(0,0,0,0.38)' }}>
+                  No attendance records found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   )
