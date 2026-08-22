@@ -118,7 +118,7 @@ export default function EmployeeProfile() {
           </span>
           {profile.date_of_joining && (
             <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)', marginTop: 12 }}>
-              Joined {profile.date_of_joining ? format(new Date(profile.date_of_joining + 'T00:00:00'), 'MMM d, yyyy')}
+              Joined {format(new Date(profile.date_of_joining + 'T00:00:00'), 'MMM d, yyyy')}
             </p>
           )}
         </div>
@@ -171,7 +171,7 @@ export default function EmployeeProfile() {
             <InfoRow icon="work" label="Job Title" value={profile.job_title} />
             <InfoRow icon="business" label="Department" value={profile.department} />
             <InfoRow icon="calendar_today" label="Date of Joining" value={profile.date_of_joining
-              ? profile.date_of_joining ? format(new Date(profile.date_of_joining + 'T00:00:00'), 'MMMM d, yyyy') : null} />
+              ? format(new Date(profile.date_of_joining + 'T00:00:00'), 'MMMM d, yyyy') : '--'} />
           </div>
         </div>
       </div>
