@@ -18,8 +18,13 @@ import EmployeeAttendance from './pages/employee/EmployeeAttendance'
 import EmployeeLeave from './pages/employee/EmployeeLeave'
 import EmployeePayroll from './pages/employee/EmployeePayroll'
 
-// Dummy Admin Pages for now (to avoid routing errors if we try to click them)
-const DummyAdmin = ({ title }) => <div className="p-8 text-white"><h1 className="page-title">{title}</h1><p className="text-slate-400 mt-2">Coming soon in Phase 5.</p></div>
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminEmployees from './pages/admin/AdminEmployees'
+import AdminEmployeeDetail from './pages/admin/AdminEmployeeDetail'
+import AdminAttendance from './pages/admin/AdminAttendance'
+import AdminLeaves from './pages/admin/AdminLeaves'
+import AdminPayroll from './pages/admin/AdminPayroll'
 
 export default function App() {
   return (
@@ -44,14 +49,15 @@ export default function App() {
             <Route path="payroll" element={<EmployeePayroll />} />
           </Route>
 
-          {/* Admin Routes (Phase 5 stubs) */}
+          {/* Admin Routes */}
           <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
             <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<DummyAdmin title="Admin Dashboard" />} />
-            <Route path="employees" element={<DummyAdmin title="Manage Employees" />} />
-            <Route path="attendance" element={<DummyAdmin title="Attendance Oversight" />} />
-            <Route path="leaves" element={<DummyAdmin title="Leave Approvals" />} />
-            <Route path="payroll" element={<DummyAdmin title="Payroll Management" />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="employees" element={<AdminEmployees />} />
+            <Route path="employees/:id" element={<AdminEmployeeDetail />} />
+            <Route path="attendance" element={<AdminAttendance />} />
+            <Route path="leaves" element={<AdminLeaves />} />
+            <Route path="payroll" element={<AdminPayroll />} />
           </Route>
         </Routes>
       </BrowserRouter>
