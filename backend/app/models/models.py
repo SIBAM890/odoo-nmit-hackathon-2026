@@ -1,9 +1,8 @@
 """
-Models package initialization.
-Exports all database models and enum classes.
+Re-export of all database models for convenience.
 """
-from app.database.db import Base
-from app.models.enums import (
+from app.models import (
+    Base,
     RoleEnum,
     AttendanceStatusEnum,
     LeaveTypeEnum,
@@ -12,15 +11,17 @@ from app.models.enums import (
     AttendanceStatus,
     LeaveType,
     LeaveStatus,
+    User,
+    Department,
+    Employee,
+    Attendance,
+    LeaveRequest,
+    PayrollStructure,
+    PayrollHistory,
+    Payroll,
+    Document,
+    Notification,
 )
-from app.models.user import User
-from app.models.department import Department
-from app.models.employee import Employee
-from app.models.attendance import Attendance
-from app.models.leave_request import LeaveRequest
-from app.models.payroll import PayrollStructure, PayrollHistory, Payroll
-from app.models.document import Document
-from app.models.notification import Notification
 
 __all__ = [
     "Base",

@@ -1,30 +1,27 @@
 """
 Attendance router.
 
-Business rules enforced server-side:
-- check-in: only one per day per employee (409 if already checked in)
-- check-out: must have a check-in for today (400 if not)
-- check-out auto-sets status: ≥4 hours → present, <4 hours → half-day
-- Admin can read any employee's records and correct them
-
-Employees can only see their own records (enforced via get_current_employee).
+Business rules:
+- check-in: only one per day per employee
+- check-out: must have check-in for today
+- check-out auto-sets status: ≥4 hours → present, <4 hours → half_day
+- Admin can read and correct attendance records
 """
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.auth.dependencies import get_current_employee, require_admin
 from app.database.db import get_db
-from app.models.attendance import Attendance, AttendanceStatus
+from app.models.attendance import Attendance
+from app.models.enums import AttendanceStatusEnum
 from app.models.employee import Employee
 from app.models.user import User
 from app.schemas.attendance import AttendanceAdminUpdate, AttendanceOut
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
-
-
 
 
 @router.post("/check-in", response_model=AttendanceOut)
@@ -35,9 +32,13 @@ def check_in(
     """Docstring for check_in."""
     now = datetime.utcnow()
     today = now.date()
-    
+
     existing = (
         db.query(Attendance)
+        .options(
+            joinedload(Attendance.employee).joinedload(Employee.department),
+            joinedload(Attendance.employee).joinedload(Employee.user),
+        )
         .filter(Attendance.employee_id == current_employee.id, Attendance.date == today)
         .first()
     )
@@ -57,7 +58,7 @@ def check_in(
         employee_id=current_employee.id,
         date=today,
         check_in_time=now,
-        status=AttendanceStatus.present,
+        status=AttendanceStatusEnum.present,
     )
     db.add(record)
     db.commit()
@@ -73,9 +74,13 @@ def check_out(
     """Docstring for check_out."""
     now = datetime.utcnow()
     today = now.date()
-    
+
     record = (
         db.query(Attendance)
+        .options(
+            joinedload(Attendance.employee).joinedload(Employee.department),
+            joinedload(Attendance.employee).joinedload(Employee.user),
+        )
         .filter(Attendance.employee_id == current_employee.id, Attendance.date == today)
         .first()
     )
@@ -89,9 +94,10 @@ def check_out(
 
     record.check_out_time = now
 
-    # Auto-compute status based on hours worked
-    hours = (now - record.check_in_time).total_seconds() / 3600
-    record.status = AttendanceStatus.present if hours >= 4 else AttendanceStatus.half_day
+    # Auto-compute status based on hours worked (treating naive UTC)
+    check_in_dt = record.check_in_time.replace(tzinfo=None) if record.check_in_time.tzinfo else record.check_in_time
+    hours = (now - check_in_dt).total_seconds() / 3600
+    record.status = AttendanceStatusEnum.present if hours >= 4 else AttendanceStatusEnum.half_day
 
     db.commit()
     db.refresh(record)
@@ -106,11 +112,15 @@ def my_attendance(
     """Docstring for my_attendance."""
     records = (
         db.query(Attendance)
+        .options(
+            joinedload(Attendance.employee).joinedload(Employee.department),
+            joinedload(Attendance.employee).joinedload(Employee.user),
+        )
         .filter(Attendance.employee_id == current_employee.id)
         .order_by(Attendance.date.desc())
         .all()
     )
-    return [r for r in records]
+    return records
 
 
 @router.get("", response_model=List[AttendanceOut])
@@ -122,7 +132,10 @@ def all_attendance(
     date_to: Optional[date] = Query(None),
 ):
     """Admin: get all attendance records, optionally filtered."""
-    q = db.query(Attendance)
+    q = db.query(Attendance).options(
+        joinedload(Attendance.employee).joinedload(Employee.department),
+        joinedload(Attendance.employee).joinedload(Employee.user),
+    )
     if employee_id:
         q = q.filter(Attendance.employee_id == employee_id)
     if date_from:
@@ -130,7 +143,7 @@ def all_attendance(
     if date_to:
         q = q.filter(Attendance.date <= date_to)
     records = q.order_by(Attendance.date.desc()).all()
-    return [r for r in records]
+    return records
 
 
 @router.get("/{employee_id}", response_model=List[AttendanceOut])
@@ -142,11 +155,15 @@ def employee_attendance(
     """Docstring for employee_attendance."""
     records = (
         db.query(Attendance)
+        .options(
+            joinedload(Attendance.employee).joinedload(Employee.department),
+            joinedload(Attendance.employee).joinedload(Employee.user),
+        )
         .filter(Attendance.employee_id == employee_id)
         .order_by(Attendance.date.desc())
         .all()
     )
-    return [r for r in records]
+    return records
 
 
 @router.put("/{record_id}", response_model=AttendanceOut)
@@ -157,12 +174,29 @@ def admin_update_attendance(
     db: Session = Depends(get_db),
 ):
     """Admin correction of attendance records."""
-    record = db.query(Attendance).filter(Attendance.id == record_id).first()
+    record = (
+        db.query(Attendance)
+        .options(
+            joinedload(Attendance.employee).joinedload(Employee.department),
+            joinedload(Attendance.employee).joinedload(Employee.user),
+        )
+        .filter(Attendance.id == record_id)
+        .first()
+    )
     if not record:
         raise HTTPException(status_code=404, detail="Attendance record not found")
-    for field, value in payload.model_dump(exclude_unset=True).items():
+
+    data = payload.model_dump(exclude_unset=True)
+    if "status" in data and data["status"] is not None:
+        status_str = str(data.pop("status")).replace("-", "_").lower()
+        if status_str in AttendanceStatusEnum.__members__:
+            record.status = AttendanceStatusEnum[status_str]
+        elif status_str in [s.value for s in AttendanceStatusEnum]:
+            record.status = AttendanceStatusEnum(status_str)
+
+    for field, value in data.items():
         setattr(record, field, value)
+
     db.commit()
     db.refresh(record)
     return record
-

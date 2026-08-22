@@ -3,38 +3,36 @@ User model — authentication identity.
 Satisfies Requirements: Auth (3.1), Dashboard (3.2), System-wide Alerts.
 
 Stores credentials and role only; all profile data lives in employees.
-is_verified simulates an email-verification gate (no real SMTP wired —
-a /auth/verify/{token} endpoint lets us demo the state machine).
+is_verified simulates an email-verification gate.
 """
-import enum
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Enum as SAEnum, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from app.database.db import Base
-
-
-class UserRole(str, enum.Enum):
-    """Docstring for UserRole."""
-    employee = "employee"
-    admin = "admin"
+from app.models.enums import RoleEnum, UserRole
 
 
 class User(Base):
-    """Docstring for User."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     employee_id = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
-    role = Column(Enum(UserRole), nullable=False, default=UserRole.employee)
+    role = Column(
+        SAEnum(RoleEnum, name="role_enum", create_type=True),
+        nullable=False,
+        default=RoleEnum.employee,
+    )
     is_verified = Column(Boolean, default=False, nullable=False)
-    # Simulated verify token — would be emailed in production
     verify_token = Column(String(255), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    last_login_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # Relationship to employee profile (one-to-one)
-    employee = relationship("Employee", back_populates="user", uselist=False)
-    notifications = relationship("Notification", back_populates="user")
+    # Relationships
+    employee = relationship("Employee", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")

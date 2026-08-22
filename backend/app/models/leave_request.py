@@ -1,48 +1,59 @@
 """
 LeaveRequest model.
 Satisfies Requirements: Leave & Time-Off (3.5), Dashboard (3.2).
-
-Status state machine: pending → approved | rejected
-admin_comment is written by HR when approving/rejecting.
 """
-import enum
 from datetime import date, datetime
 
-from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import CheckConstraint, Column, Date, DateTime, Enum as SAEnum, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from app.database.db import Base
-
-
-class LeaveType(str, enum.Enum):
-    """Docstring for LeaveType."""
-    paid = "paid"
-    sick = "sick"
-    unpaid = "unpaid"
-
-
-class LeaveStatus(str, enum.Enum):
-    """Docstring for LeaveStatus."""
-    pending = "pending"
-    approved = "approved"
-    rejected = "rejected"
+from app.models.enums import LeaveStatusEnum, LeaveTypeEnum, LeaveStatus, LeaveType
 
 
 class LeaveRequest(Base):
-    """Docstring for LeaveRequest."""
     __tablename__ = "leave_requests"
+    __table_args__ = (
+        CheckConstraint("end_date >= start_date", name="check_valid_date_range"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False, index=True)
-    leave_type = Column(Enum(LeaveType), nullable=False)
+    employee_id = Column(Integer, ForeignKey("employees.id", ondelete="CASCADE"), nullable=False, index=True)
+    leave_type = Column(
+        SAEnum(LeaveTypeEnum, name="leave_type_enum", create_type=True),
+        nullable=False,
+    )
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     remarks = Column(Text, nullable=True)
-    status = Column(Enum(LeaveStatus), default=LeaveStatus.pending, nullable=False)
+    status = Column(
+        SAEnum(LeaveStatusEnum, name="leave_status_enum", create_type=True),
+        default=LeaveStatusEnum.pending,
+        nullable=False,
+    )
     admin_comment = Column(Text, nullable=True)
-    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
-    reviewed_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    decided_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    decided_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     employee = relationship("Employee", back_populates="leave_requests")
-    reviewer = relationship("User", foreign_keys=[reviewed_by])
+    decider = relationship("User", foreign_keys=[decided_by])
+
+    # Backward compatibility properties for legacy code
+    @property
+    def reviewed_by(self):
+        return self.decided_by
+
+    @reviewed_by.setter
+    def reviewed_by(self, value):
+        self.decided_by = value
+
+    @property
+    def reviewed_at(self):
+        return self.decided_at
+
+    @reviewed_at.setter
+    def reviewed_at(self, value):
+        self.decided_at = value

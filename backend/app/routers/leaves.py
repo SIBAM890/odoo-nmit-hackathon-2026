@@ -3,24 +3,22 @@ Leave requests router.
 
 State machine: pending → approved | rejected (admin only).
 Employees can only create and view their own requests.
-Approved/rejected status is reflected immediately — no caching layer.
 """
 from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.auth.dependencies import get_current_employee, require_admin
 from app.database.db import get_db
 from app.models.employee import Employee
-from app.models.leave_request import LeaveRequest, LeaveStatus
+from app.models.leave_request import LeaveRequest
+from app.models.enums import LeaveStatusEnum, LeaveTypeEnum
 from app.models.user import User
 from app.schemas.leave import LeaveCreate, LeaveDecision, LeaveOut
 
 router = APIRouter(prefix="/leaves", tags=["leaves"])
-
-
 
 
 @router.post("", response_model=LeaveOut, status_code=201)
@@ -34,7 +32,7 @@ def apply_leave(
         db.query(LeaveRequest)
         .filter(
             LeaveRequest.employee_id == current_employee.id,
-            LeaveRequest.status.in_([LeaveStatus.pending, LeaveStatus.approved]),
+            LeaveRequest.status.in_([LeaveStatusEnum.pending, LeaveStatusEnum.approved]),
             LeaveRequest.start_date <= payload.end_date,
             LeaveRequest.end_date >= payload.start_date,
         )
@@ -52,7 +50,7 @@ def apply_leave(
         start_date=payload.start_date,
         end_date=payload.end_date,
         remarks=payload.remarks,
-        status=LeaveStatus.pending,
+        status=LeaveStatusEnum.pending,
     )
     db.add(leave)
     db.commit()
@@ -68,11 +66,15 @@ def my_leaves(
     """Docstring for my_leaves."""
     leaves = (
         db.query(LeaveRequest)
+        .options(
+            joinedload(LeaveRequest.employee).joinedload(Employee.department),
+            joinedload(LeaveRequest.employee).joinedload(Employee.user),
+        )
         .filter(LeaveRequest.employee_id == current_employee.id)
         .order_by(LeaveRequest.id.desc())
         .all()
     )
-    return [l for l in leaves]
+    return leaves
 
 
 @router.get("", response_model=List[LeaveOut])
@@ -81,8 +83,16 @@ def all_leaves(
     db: Session = Depends(get_db),
 ):
     """Docstring for all_leaves."""
-    leaves = db.query(LeaveRequest).order_by(LeaveRequest.id.desc()).all()
-    return [l for l in leaves]
+    leaves = (
+        db.query(LeaveRequest)
+        .options(
+            joinedload(LeaveRequest.employee).joinedload(Employee.department),
+            joinedload(LeaveRequest.employee).joinedload(Employee.user),
+        )
+        .order_by(LeaveRequest.id.desc())
+        .all()
+    )
+    return leaves
 
 
 @router.put("/{leave_id}/approve", response_model=LeaveOut)
@@ -93,15 +103,24 @@ def approve_leave(
     db: Session = Depends(get_db),
 ):
     """Docstring for approve_leave."""
-    leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id).first()
+    leave = (
+        db.query(LeaveRequest)
+        .options(
+            joinedload(LeaveRequest.employee).joinedload(Employee.department),
+            joinedload(LeaveRequest.employee).joinedload(Employee.user),
+        )
+        .filter(LeaveRequest.id == leave_id)
+        .first()
+    )
     if not leave:
         raise HTTPException(status_code=404, detail="Leave request not found")
-    if leave.status != LeaveStatus.pending:
+    if leave.status != LeaveStatusEnum.pending:
         raise HTTPException(status_code=400, detail=f"Leave is already {leave.status.value}")
-    leave.status = LeaveStatus.approved
+
+    leave.status = LeaveStatusEnum.approved
     leave.admin_comment = payload.admin_comment
-    leave.reviewed_by = _admin.id
-    leave.reviewed_at = datetime.utcnow()
+    leave.decided_by = _admin.id
+    leave.decided_at = datetime.utcnow()
     db.commit()
     db.refresh(leave)
     return leave
@@ -115,16 +134,24 @@ def reject_leave(
     db: Session = Depends(get_db),
 ):
     """Docstring for reject_leave."""
-    leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id).first()
+    leave = (
+        db.query(LeaveRequest)
+        .options(
+            joinedload(LeaveRequest.employee).joinedload(Employee.department),
+            joinedload(LeaveRequest.employee).joinedload(Employee.user),
+        )
+        .filter(LeaveRequest.id == leave_id)
+        .first()
+    )
     if not leave:
         raise HTTPException(status_code=404, detail="Leave request not found")
-    if leave.status != LeaveStatus.pending:
+    if leave.status != LeaveStatusEnum.pending:
         raise HTTPException(status_code=400, detail=f"Leave is already {leave.status.value}")
-    leave.status = LeaveStatus.rejected
+
+    leave.status = LeaveStatusEnum.rejected
     leave.admin_comment = payload.admin_comment
-    leave.reviewed_by = _admin.id
-    leave.reviewed_at = datetime.utcnow()
+    leave.decided_by = _admin.id
+    leave.decided_at = datetime.utcnow()
     db.commit()
     db.refresh(leave)
     return leave
-

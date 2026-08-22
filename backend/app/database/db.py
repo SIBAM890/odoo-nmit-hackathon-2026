@@ -1,19 +1,22 @@
 """
-Database engine + session factory.
-
-Using SQLite with check_same_thread=False so FastAPI's async handlers
-(which may use a threadpool) can safely access the connection.
-We keep a single file-based DB for the hackathon scope.
+Database engine + session factory for PostgreSQL / SQLite.
 """
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config import settings
 
-# connect_args is SQLite-specific; harmless on other engines
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    settings.DATABASE_URL or "postgresql+psycopg2://postgres:postgres@localhost:5432/dayflow_db"
+)
+
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
 engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False},
+    DATABASE_URL,
+    connect_args=connect_args,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
