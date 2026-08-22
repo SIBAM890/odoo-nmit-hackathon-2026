@@ -121,7 +121,7 @@ npm run dev
 
 ---
 
-##  Demo Credentials
+## Demo Credentials
 
 The database is seeded with two default users:
 
@@ -132,3 +132,9 @@ The database is seeded with two default users:
 **Employee Role:**
 - **Email:** `alice@dayflow.io`
 - **Password:** `Alice@123`
+
+---
+
+## Developed by- Team Saridon
+
+| Sibam Prasad Sahoo || Suryansh Anand || Pritam Piyush || Varsha Sharma |
