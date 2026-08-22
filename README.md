@@ -50,6 +50,39 @@ It features a split-role architecture separating standard Employees from HR Admi
 | 🔐 Password Hashing | Passwords are never stored in plaintext (uses `bcrypt`) |
  
 ---
+## 🏗️ System Overview
+ 
+```mermaid
+flowchart TB
+ 
+    User[User]
+    Auth[JWT Authentication]
+ 
+    Dashboard[Role-Based Dashboard]
+ 
+    Emp[Employee Portal]
+    Admin[Admin Portal]
+ 
+    User --> Auth
+    Auth --> Dashboard
+ 
+    Dashboard --> Emp
+    Dashboard --> Admin
+ 
+    Emp --> Att[Attendance History]
+    Emp --> Leave[Leave Requests]
+    Emp --> Pay[Payroll · Read-only]
+    Emp --> Prof[Profile]
+ 
+    Admin --> Dir[Employee Directory]
+    Admin --> Over[Attendance Oversight]
+    Admin --> Appr[Leave Approvals]
+    Admin --> Setup[Payroll Setup]
+ 
+    Appr --> Leave
+```
+ 
+---
 
 ## 💻 How to Run Locally
 
