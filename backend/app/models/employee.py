@@ -1,5 +1,6 @@
 """
 Employee model — profile data separate from auth credentials.
+Satisfies Requirements: Employee Profile (3.3), Dashboard (3.2).
 
 Split from users so that: (a) HR can edit profile without touching auth,
 (b) admin-side employee management is cleanly scoped,
@@ -18,7 +19,7 @@ class Employee(Base):
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False, index=True)
     full_name = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=True)
     address = Column(Text, nullable=True)

@@ -1,5 +1,6 @@
 """
 Notification model — in-app notifications.
+Satisfies Requirements: Dashboard (3.2 - recent activity/alerts), System-wide (Email & notification alerts).
 
 Supports categorised notifications (leave status, attendance,
 payroll, general) with read/unread tracking per user.

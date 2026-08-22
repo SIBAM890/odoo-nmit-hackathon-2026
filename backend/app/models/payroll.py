@@ -1,5 +1,6 @@
 """
 Payroll model.
+Satisfies Requirements: Payroll (3.6), Employee Profile (3.3 - salary structure).
 
 net_salary is always derived: basic + hra - deductions.
 We store it explicitly for audit/history rather than computing on every read.
@@ -18,7 +19,7 @@ class Payroll(Base):
     __tablename__ = "payroll"
 
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer, ForeignKey("employees.id"), unique=True, nullable=False)
+    employee_id = Column(Integer, ForeignKey("employees.id"), unique=True, nullable=False, index=True)
     basic = Column(Float, default=0.0, nullable=False)
     hra = Column(Float, default=0.0, nullable=False)
     deductions = Column(Float, default=0.0, nullable=False)

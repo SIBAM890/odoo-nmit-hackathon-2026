@@ -1,5 +1,6 @@
 """
 LeaveRequest model.
+Satisfies Requirements: Leave & Time-Off (3.5), Dashboard (3.2).
 
 Status state machine: pending → approved | rejected
 admin_comment is written by HR when approving/rejecting.
@@ -39,7 +40,7 @@ class LeaveRequest(Base):
     remarks = Column(Text, nullable=True)
     status = Column(Enum(LeaveStatus), default=LeaveStatus.pending, nullable=False)
     admin_comment = Column(Text, nullable=True)
-    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     reviewed_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 

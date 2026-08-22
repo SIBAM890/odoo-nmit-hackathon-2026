@@ -1,5 +1,6 @@
 """
 User model — authentication identity.
+Satisfies Requirements: Auth (3.1), Dashboard (3.2), System-wide Alerts.
 
 Stores credentials and role only; all profile data lives in employees.
 is_verified simulates an email-verification gate (no real SMTP wired —

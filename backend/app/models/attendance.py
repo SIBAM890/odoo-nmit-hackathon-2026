@@ -1,5 +1,6 @@
 """
 Attendance model.
+Satisfies Requirements: Attendance (3.4), Dashboard (3.2).
 
 Status is set automatically on check-out:
   - hours >= 4  → present

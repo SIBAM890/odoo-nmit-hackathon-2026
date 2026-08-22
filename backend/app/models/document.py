@@ -1,5 +1,6 @@
 """
 Document model — employee document storage.
+Satisfies Requirements: Employee Profile (3.3 - documents).
 
 Tracks uploaded files (ID proofs, offer letters, pay-slips, etc.)
 linked to an employee, with an audit trail of who uploaded them.
@@ -20,7 +21,7 @@ class Document(Base):
     doc_type = Column(String(50), nullable=False)
     file_name = Column(String(255), nullable=False)
     file_url = Column(String(500), nullable=False)
-    uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     uploaded_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
