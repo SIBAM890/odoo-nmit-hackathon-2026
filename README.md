@@ -4,16 +4,16 @@ Dayflow is a modern, responsive, and production-grade Human Resource Management 
 
 It features a split-role architecture separating standard Employees from HR Administrators, providing a seamless workflow for tracking attendance, managing leave requests, and handling payroll structures.
 
-## ✨ Features
+## Features
  
-### 👨‍💼 Employee Portal
+### Employee Portal
  
 * **Dashboard** — quick overview of attendance metrics, live check-in/out, and pending leaves
 * **Attendance History** — detailed log of all daily check-ins and check-outs
 * **Leave Management** — submit new leave requests (Sick, Paid, Unpaid) and track approval status
 * **Payroll** — read-only view of current salary structure (Basic, HRA, Deductions, Net Pay)
 * **Profile Management** — update personal contact details and profile avatars
-### 🧑‍💼 Admin Portal
+### Admin Portal
  
 * **Admin Dashboard** — company-wide HR metrics and actionable pending queues
 * **Employee Directory** — searchable staff list with a detailed edit view for managing roles and job titles
@@ -22,7 +22,7 @@ It features a split-role architecture separating standard Employees from HR Admi
 * **Payroll Setup** — initialize and update salary components for any employee dynamically
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend**
 - React 18 (Vite)
@@ -40,17 +40,17 @@ It features a split-role architecture separating standard Employees from HR Admi
 
 ---
 
-## 🔒 Security Principles
+## Security Principles
  
 | Principle | Details |
 | --- | :-- |
-| 🔑 No Mock Auth | Full JWT implementation — roles (`admin`, `employee`) are embedded securely in the token payload |
-| 🚧 Route Guards | Frontend blocks unauthorized access to Admin pages |
-| 🛡️ Server-Side Enforcement | Backend enforces data ownership — an employee cannot view or edit another employee's attendance, leaves, or payroll |
-| 🔐 Password Hashing | Passwords are never stored in plaintext (uses `bcrypt`) |
+|  No Mock Auth | Full JWT implementation — roles (`admin`, `employee`) are embedded securely in the token payload |
+|  Route Guards | Frontend blocks unauthorized access to Admin pages |
+|  Server-Side Enforcement | Backend enforces data ownership — an employee cannot view or edit another employee's attendance, leaves, or payroll |
+|  Password Hashing | Passwords are never stored in plaintext (uses `bcrypt`) |
  
 ---
-## 🏗️ System Overview
+##  System Overview
  
 ```mermaid
 flowchart TB
@@ -84,7 +84,7 @@ flowchart TB
  
 ---
 
-## 💻 How to Run Locally
+##  How to Run Locally
 
 ### 1. Start the Backend API
 ```bash
@@ -121,7 +121,7 @@ npm run dev
 
 ---
 
-## 🧪 Demo Credentials
+##  Demo Credentials
 
 The database is seeded with two default users:
 
