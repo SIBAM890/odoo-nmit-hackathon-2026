@@ -1,25 +1,25 @@
-### Dayflow - HRMS
+### 🌤️ Dayflow — Human Resource Management System
 
 Dayflow is a modern, responsive, and production-grade Human Resource Management System (HRMS) built for the **Odoo x NMIT Bangalore Hackathon 2026**.
 
 It features a split-role architecture separating standard Employees from HR Administrators, providing a seamless workflow for tracking attendance, managing leave requests, and handling payroll structures.
 
-## 🚀 Features
-
-### **Employee Portal**
-- **Dashboard**: Quick overview of attendance metrics, live check-in/out, and pending leaves.
-- **Attendance History**: Detailed log of all daily check-ins and check-outs.
-- **Leave Management**: Submit new leave requests (Sick, Paid, Unpaid) and track approval status.
-- **Payroll**: Read-only view of current salary structure (Basic, HRA, Deductions, Net Pay).
-- **Profile Management**: Update personal contact details and profile avatars.
-
-### **Admin Portal**
-- **Admin Dashboard**: Company-wide HR metrics and actionable pending queues.
-- **Employee Directory**: Searchable list of all staff, with a detailed edit view for managing roles and job titles.
-- **Attendance Oversight**: Override capabilities to manually fix or adjust employee attendance records.
-- **Leave Approvals**: Dedicated queue for reviewing, approving, or rejecting leave requests with optional admin feedback.
-- **Payroll Setup**: Initialize and update salary components for any employee dynamically.
-
+## ✨ Features
+ 
+### 👨‍💼 Employee Portal
+ 
+* **Dashboard** — quick overview of attendance metrics, live check-in/out, and pending leaves
+* **Attendance History** — detailed log of all daily check-ins and check-outs
+* **Leave Management** — submit new leave requests (Sick, Paid, Unpaid) and track approval status
+* **Payroll** — read-only view of current salary structure (Basic, HRA, Deductions, Net Pay)
+* **Profile Management** — update personal contact details and profile avatars
+### 🧑‍💼 Admin Portal
+ 
+* **Admin Dashboard** — company-wide HR metrics and actionable pending queues
+* **Employee Directory** — searchable staff list with a detailed edit view for managing roles and job titles
+* **Attendance Oversight** — override capabilities to manually fix or adjust employee attendance records
+* **Leave Approvals** — dedicated queue for reviewing, approving, or rejecting leave requests with optional admin feedback
+* **Payroll Setup** — initialize and update salary components for any employee dynamically
 ---
 
 ## 🛠️ Tech Stack
@@ -41,12 +41,14 @@ It features a split-role architecture separating standard Employees from HR Admi
 ---
 
 ## 🔒 Security Principles
-
-- **No Mock Auth**: Full JWT implementation. Roles (`admin`, `employee`) are embedded securely in the token payload.
-- **Route Guards**: Frontend blocks unauthorized access to Admin pages.
-- **Server-Side Enforcement**: Backend enforces data ownership. An employee cannot view or edit another employee's attendance, leaves, or payroll.
-- **Password Hashing**: Passwords are never stored in plaintext (uses `bcrypt`).
-
+ 
+| Principle | Details |
+| --- | :-- |
+| 🔑 No Mock Auth | Full JWT implementation — roles (`admin`, `employee`) are embedded securely in the token payload |
+| 🚧 Route Guards | Frontend blocks unauthorized access to Admin pages |
+| 🛡️ Server-Side Enforcement | Backend enforces data ownership — an employee cannot view or edit another employee's attendance, leaves, or payroll |
+| 🔐 Password Hashing | Passwords are never stored in plaintext (uses `bcrypt`) |
+ 
 ---
 
 ## 💻 How to Run Locally
